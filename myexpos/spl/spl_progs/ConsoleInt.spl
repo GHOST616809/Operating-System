@@ -1,0 +1,19 @@
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13]=SP;
+SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512-1;
+backup;
+alias PID R5;
+PID=[SYSTEM_STATUS_TABLE+1];
+
+alias reqPID R2;
+reqPID=[TERMINAL_STATUS_TABLE+1];
+
+[PROCESS_TABLE+reqPID*16+8]=P0;
+alias funcnm R1;
+funcnm=9;
+multipush(R0,R1,R2,R5);
+
+call MOD_0;
+multipop(R0,R1,R2,R5);
+restore;
+SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13];
+ireturn;

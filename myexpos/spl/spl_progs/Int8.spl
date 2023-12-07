@@ -1,0 +1,115 @@
+breakpoint;
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=8;
+alias usp R7;
+usp=SP;
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13]=SP;
+SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512-1;
+alias funcnum R1;
+alias PID R2;
+alias retn R0;
+funcnum=1;
+multipush(R1,R2,R7);
+call MOD_1;
+breakpoint;
+multipop(R1,R2,R7);
+PID=retn;
+if(retn==-1) then
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
+SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13];
+[[PTBR+2*((usp-1)/512)]*512+((usp-1)%512)]=-1;
+ireturn;
+endif;
+
+
+if([PTBR+4]==-1) then
+funcnum=1;
+multipush(R1,R2,R7);
+call MOD_2;
+breakpoint;
+multipop(R1,R2,R7);
+[PTBR+4]=retn;
+[PTBR+5]="0110";
+funcnum=1;
+multipush(R1,R2,R7);
+call MOD_2;
+breakpoint;
+multipop(R1,R2,R7);
+[PTBR+6]=retn;
+[PTBR+7]="0110";
+endif;
+
+alias tablebase R9;
+tablebase=PAGE_TABLE_BASE;
+
+funcnum=1;
+multipush(R1,R2,R7,R9);
+call MOD_2;
+breakpoint;
+multipop(R1,R2,R7,R9);
+[tablebase+PID*20+16]=retn;
+[tablebase+PID*20+17]="0110";
+funcnum=1;
+multipush(R1,R2,R7,R9);
+call MOD_2;
+breakpoint;
+multipop(R1,R2,R7,R9);
+[tablebase+PID*20+18]=retn;
+[tablebase+PID*20+19]="0110";
+
+
+funcnum=1;
+multipush(R1,R2,R7,R9);
+call MOD_2;
+breakpoint;
+multipop(R1,R2,R7,R9);
+[PROCESS_TABLE+PID*16+11]=retn;
+[PROCESS_TABLE+PID*16+3]=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+3];
+[PROCESS_TABLE+PID*16+6]=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+6];
+[PROCESS_TABLE+PID*16+10]=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+10];
+[PROCESS_TABLE+PID*16+7]=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+7];
+[PROCESS_TABLE+PID*16+13]=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13];
+
+[PROCESS_TABLE+PID*16+9]=0;
+[PROCESS_TABLE+PID*16+0]=0;
+[PROCESS_TABLE+PID*16+12]=0;
+[PROCESS_TABLE+PID*16+2]=[SYSTEM_STATUS_TABLE+1];
+[PROCESS_TABLE+PID*16+4]="CREATED";
+[PROCESS_TABLE+PID*16+14]=tablebase+PID*20;
+[PROCESS_TABLE+PID*16+15]=20;
+breakpoint;
+alias cnt R10;
+cnt=2;
+while(cnt<10) do
+[DISK_MAP_TABLE+PID*10+cnt]= [DISK_MAP_TABLE+[SYSTEM_STATUS_TABLE+1]*10+cnt];
+cnt=cnt+1;
+endwhile;
+cnt=0;
+while(cnt<16) do
+[tablebase+PID*20+cnt]=[PTBR+cnt];
+[MEMORY_FREE_LIST+[PTBR+cnt]]=[MEMORY_FREE_LIST+[PTBR+cnt]]+1;
+cnt=cnt+1;
+[tablebase+PID*20+cnt]=[PTBR+cnt];
+cnt=cnt+1;
+endwhile;
+alias strt R11;
+cnt=0;
+strt=[PTBR+16]*512;
+alias nwstrt R12;
+alias diff R13;
+diff=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13]-8*512;
+
+nwstrt=[tablebase+PID*20+16]*512;
+while(cnt<=diff) do
+[cnt+(nwstrt)]=[cnt+strt];
+cnt=cnt+1;
+endwhile;
+breakpoint;
+alias childst R8;
+childst=[PROCESS_TABLE+PID*16+13];
+[[PROCESS_TABLE+PID*16+11]*512]=BP;
+[[PTBR+2*((usp-1)/512)]*512+(usp-1)%512]=PID;
+[[PTBR+2*((childst-1)/512)]*512+((childst-1)%512)]=0;
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
+SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13];
+print"INt8 ended";
+ireturn;

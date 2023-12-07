@@ -1,0 +1,40 @@
+breakpoint;
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=10;
+print "Int10";
+alias funcnum R1;
+alias usp R8;
+usp=SP;
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13]=SP;
+SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512-1;
+alias arg R2;
+funcnum=3;
+arg=[SYSTEM_STATUS_TABLE+1];
+multipush(R1,R2,R8);
+call MOD_1;
+multipop(R1,R2,R8);
+
+
+
+
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+4]="TERMINATED";
+
+alias cnt R10;
+cnt=1;
+alias flag R5;
+flag=0;
+while(cnt<16) do
+if([PROCESS_TABLE+cnt*16+4]!="TERMINATED") then
+flag=1;
+break;
+endif;
+cnt=cnt+1;
+endwhile;
+
+if(flag==0) then
+halt;
+else
+call MOD_5;
+endif;
+
+
+

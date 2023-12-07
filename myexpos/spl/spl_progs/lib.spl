@@ -1,0 +1,15 @@
+alias A R0;
+A=SP;
+
+[PRROCESS_TABLE+[SYSTEM_STATUS+1]*16+9]=[A-4];
+alias B R1;
+alias padd R2;
+padd=512*[PTBR+2*((A-3)/512)]+(A-3)%512;
+alias val R3;
+val=[padd];
+if(val==-2)
+then
+padd=512*[PTBR+2*((A-2)/512)]+(A-2)%512;
+val=[padd];
+print val;
+

@@ -1,0 +1,56 @@
+breakpoint;
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=-1;
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13]=SP;
+alias funcnum R1;
+alias usersp R8;
+alias retn R0;
+usersp=SP;
+SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512-1;
+backup;
+multipush(EIP);
+alias cause EC;
+if(cause!=0||usersp==PTLR*512-1) then
+alias PID R2;
+funcnum=3;
+multipush(R1,R2,R8,EIP,EPN,EC,EMA);
+call MOD_1;
+multipop(R1,R2,R8,EIP,EPN,EC,EMA);
+multipush(R1,R2,R8,EIP,EPN,EC,EMA);
+call MOD_5;
+multipop(R1,R2,R8,EIP,EPN,EC,EMA);
+
+else
+alias expgno EPN;
+alias blk R2;
+funcnum=5;
+if(expgno>=4&&expgno<=7) then
+blk=[DISK_MAP_TABLE+[SYSTEM_STATUS_TABLE+1]*10+expgno];
+multipush(R1,R2,R8,EIP,EPN,EC,EMA);
+call MOD_2;
+multipop(R1,R2,R8,EIP,EPN,EC,EMA);
+[PTBR+(expgno)*2]=retn;
+[PTBR+(expgno)*2+1]="1100";
+endif;
+if(expgno>=2&&expgno<=3) then
+alias cnt R9;
+cnt=0;
+while(cnt<2) do
+funcnum=1;
+multipush(R1,R2,R8,R9,EIP,EPN,EC,EMA);
+call MOD_2;
+[PTBR+(expgno+1)*2]=retn;
+[PTBR+expgno*2+1]="1110";
+multipop(R1,R2,R8,R9,EIP,EPN,EC,EMA);
+cnt=cnt+1;
+expgno=expgno+1;
+endwhile;
+endif;
+endif;
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
+multipop(EIP);
+restore;
+SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13];
+SP=SP+1;
+[[PTBR+2*(SP/512)]*512+(SP%512)]=EIP;
+
+ireturn;

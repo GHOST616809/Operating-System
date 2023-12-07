@@ -1,0 +1,141 @@
+loadi(18,31);
+loadi(19,32);
+loadi(61,2);
+loadi(6,19);
+loadi(7,20);
+loadi(20,33);
+loadi(21,34);
+loadi(42,55);
+loadi(43,56);
+loadi(44,57);
+loadi(45,58);
+loadi(59,3);
+loadi(60,4);
+loadi(14,27);
+loadi(15,28);
+loadi(8,21);
+loadi(9,22);
+loadi(40,53);
+loadi(41,54);
+loadi(48,61);
+loadi(49,62);
+loadi(50,63);
+loadi(51,64);
+loadi(63,13);
+loadi(64,14);
+loadi(16,29);
+loadi(17,30);
+loadi(4,17);
+loadi(5,18);
+loadi(65,7);
+loadi(66,8);
+loadi(63,13);
+loadi(64,14);
+loadi(22,35);
+loadi(23,36);
+loadi(2,15);
+loadi(3,16);
+
+alias cnt R5;
+cnt=0;
+while(cnt<76) do
+[MEMORY_FREE_LIST+cnt]=1;
+cnt=cnt+1;
+endwhile;
+cnt=86;
+while(cnt<128) do
+[MEMORY_FREE_LIST+cnt]=0;
+cnt=cnt+1;
+endwhile;
+
+[MEMORY_FREE_LIST+76]=1;
+[MEMORY_FREE_LIST+77]=1;
+[MEMORY_FREE_LIST+78]=1;
+[MEMORY_FREE_LIST+79]=1;
+[MEMORY_FREE_LIST+80]=1;
+[MEMORY_FREE_LIST+81]=1;
+[MEMORY_FREE_LIST+82]=1;
+[MEMORY_FREE_LIST+83]=1;
+[MEMORY_FREE_LIST+84]=1;
+[MEMORY_FREE_LIST+85]=1;
+
+[SYSTEM_STATUS_TABLE+2]=41;
+cnt=8;
+while(cnt<12) do
+if([INODE_TABLE+16+cnt]!=-1) then
+[DISK_MAP_TABLE+10+cnt-4]=[INODE_TABLE+16+cnt];
+endif;
+cnt=cnt+1;
+endwhile;
+
+
+
+[TERMINAL_STATUS_TABLE]=0;
+PTLR=10;
+
+[PTBR+20] = 63;
+[PTBR+21] = "0100";
+[PTBR+22] = 64;
+[PTBR+23] = "0100";
+[PTBR+24] = -1;
+[PTBR+25] = "0000";
+[PTBR+26] = -1;
+[PTBR+27] = "0000";
+[PTBR+28] = 65;
+[PTBR+29] = "0100";
+[PTBR+30]= 66;
+[PTBR+31]= "0100";
+[PTBR+32]= -1;
+[PTBR+33]="0000";
+[PTBR+34]= -1;
+[PTBR+35]="0000";
+[PTBR+36]= 76;
+[PTBR+37]="0110";
+[PTBR+38]= 77;
+[PTBR+39]= "0110";
+
+
+
+[PROCESS_TABLE+17]=1;
+[PROCESS_TABLE+20]="CREATED";
+[PROCESS_TABLE+27]=80;
+[PROCESS_TABLE+28]=0;
+[PROCESS_TABLE+29]=8*512;
+[PROCESS_TABLE+30]=PTBR+20;
+[PROCESS_TABLE+31]=PTLR;
+
+[76*512]=[65*512+1];
+
+
+[PROCESS_TABLE+36]="TERMINATED";
+[PROCESS_TABLE+52]="TERMINATED";
+[PROCESS_TABLE+68]="TERMINATED";
+[PROCESS_TABLE+84]="TERMINATED";
+[PROCESS_TABLE+100]="TERMINATED";
+[PROCESS_TABLE+116]="TERMINATED";
+[PROCESS_TABLE+132]="TERMINATED";
+[PROCESS_TABLE+148]="TERMINATED";
+[PROCESS_TABLE+164]="TERMINATED";
+[PROCESS_TABLE+180]="TERMINATED";
+[PROCESS_TABLE+196]="TERMINATED";
+[PROCESS_TABLE+212]="TERMINATED";
+[PROCESS_TABLE+228]="TERMINATED";
+[PROCESS_TABLE+244]="TERMINATED";
+
+
+alias ptr R13;
+ptr=496;
+while(ptr<512) do
+[[PROCESS_TABLE+27]*512+ptr]=-1;
+ptr=ptr+1;
+[[PROCESS_TABLE+27]*512+ptr]=-1;
+ptr=ptr+1;
+endwhile;
+
+
+
+
+[DISK_STATUS_TABLE]=0;
+return;
+
+

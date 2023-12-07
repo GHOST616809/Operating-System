@@ -1,0 +1,50 @@
+alias funcnm R1;
+alias PID R2;
+alias retn R0;
+alias T_stat R3;
+T_stat=TERMINAL_STATUS_TABLE;
+
+if(funcnm==8) then
+while([T_stat]!=0) do
+[PROCESS_TABLE+PID*16+4]=WAIT_TERMINAL;
+multipush(R0,R1,R2,R3);
+
+call MOD_5;
+multipop(R0,R1,R2,R3);
+endwhile;
+[T_stat]=1;
+[T_stat+1]=PID;
+return;
+endif;
+
+if(funcnm==9) then
+if([T_stat+1]!=PID) then
+retn=-1;
+return;
+else
+[T_stat]=0;
+[T_stat+1]=-1;
+alias cnt R8;
+cnt=1;
+while(cnt<16) do
+if([PROCESS_TABLE+cnt*16+4]==WAIT_TERMINAL) then
+[PROCESS_TABLE+cnt*16+4]="READY";
+endif;
+cnt=cnt+1;
+endwhile;
+retn=0;
+return;
+endif;
+endif;
+
+if(funcnm==3) then 
+while([DISK_STATUS_TABLE]==1) do 
+[PROCESS_TABLE+PID*16+4]=WAIT_DISK;
+multipush(R1,R2,R3);
+call MOD_5;
+multipop(R1,R2,R3);
+endwhile;
+[DISK_STATUS_TABLE]=1;
+[DISK_STATUS_TABLE+4]=PID;
+return;
+endif;

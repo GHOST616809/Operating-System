@@ -1,0 +1,10 @@
+alias counter R0;
+counter=1;
+while(counter!=20) do
+alias x R1;
+x=counter*counter;
+breakpoint;
+print x;
+counter=counter+1;
+endwhile;
+

@@ -1,0 +1,91 @@
+alias funcnum R1;
+alias PID R2;
+alias retn R0;
+if(funcnum==1) then 
+alias cnt R6;
+cnt=1;
+while(cnt<16) do 
+if([PROCESS_TABLE+cnt*16+4]=="TERMINATED") then
+retn=cnt;
+[PROCESS_TABLE+cnt*16+4]=ALLOCATED;
+return;
+endif;
+cnt=cnt+1;
+endwhile;
+retn=-1;
+return;
+endif;
+
+
+
+
+if(funcnum==2) then
+alias pgno R2;
+pgno=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11];
+funcnum=2;
+multipush(R2);
+call MOD_2;
+multipop(R2);
+return;
+endif;
+
+if(funcnum==3) then 
+funcnum=4;
+multipush(R1,R2);
+call MOD_1;
+multipop(R1,R2);
+funcnum=2;
+multipush(R1,R2);
+call MOD_1;
+multipop(R1,R2);
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+4]="TERMINATED";
+return;
+endif;
+
+if(funcnum==4) then
+alias cnt R10;
+cnt=2;
+while(cnt<10) do
+if(cnt!=4&&cnt!=5&&cnt!=6&&cnt!=7) then
+if([DISK_MAP_TABLE+PID*10+cnt]!=-1) then
+alias Pid R3;
+Pid=PID;
+alias blk R2;
+blk=[DISK_MAP_TABLE+Pid*10+cnt];
+multipush(R1,R2,R3,R10);
+funcnum=4;
+call MOD_2;
+multipop(R1,R2,R3,R10);
+endif;
+endif;
+[DISK_MAP_TABLE+[SYSTEM_STATUS_TABLE+1]*10+cnt]=-1;
+cnt=cnt+1;
+endwhile;
+
+
+[PTBR+0]=-1;
+[PTBR+1]="0000";
+[PTBR+2]=-1;
+[PTBR+3]="0000";
+
+cnt=4;
+breakpoint;
+while(cnt<19) do
+if([PTBR+cnt]!=-1) then
+funcnum=2;
+alias pgno R2;
+pgno=[PTBR+cnt];
+multipush(R1,R2,R10);
+call MOD_2;
+multipop(R1,R2,R10);
+[PTBR+cnt]=-1;
+cnt=cnt+1;
+[PTBR+cnt]="0000";
+cnt=cnt+1;
+else
+cnt=cnt+2;
+endif;
+endwhile;
+breakpoint;
+return;
+endif;

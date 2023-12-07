@@ -1,0 +1,124 @@
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13]=SP;
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=9;
+alias usp R3;
+usp=SP;
+SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512-1;
+breakpoint;
+alias arg R4;
+arg=[[PTBR+2*((usp-2)/512)]*512+(usp-2)%512];
+alias cnt R7;
+cnt=0;
+alias flag R6;
+flag=0;
+while(cnt<60) do
+if([INODE_TABLE+cnt*16+1]==arg) then 
+if([INODE_TABLE+cnt*16]==3) then 
+flag=1;
+break;
+endif;
+break;
+endif;
+cnt=cnt+1;
+endwhile;
+if(flag==0) then 
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
+SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13];
+[[PTBR+2*(usp-1)/512]*512+(usp-1)%512]=-1;
+ireturn;
+endif;
+alias funcnum R1;
+funcnum=3;
+alias PID R2;
+PID=[SYSTEM_STATUS_TABLE+1];
+multipush(R1,R2,R3,R4,R6,R7);
+call MOD_1;
+multipop(R1,R2,R3,R4,R6,R7);
+alias pgno R8;
+pgno=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11];
+[SYSTEM_STATUS_TABLE+2]=[SYSTEM_STATUS_TABLE+2]-1;
+[MEMORY_FREE_LIST+pgno]=1;
+SP=pgno*512-1;
+alias ptr R13;
+ptr=496;
+while(ptr<512) do
+[pgno*512+ptr]=-1;
+ptr=ptr+1;
+[pgno*512+ptr]=-1;
+ptr=ptr+1;
+endwhile;
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+4]="RUNNING";
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+7]=cnt;
+funcnum=1;
+alias retn R0;
+alias no R9;
+no=4;
+while(no<8) do
+multipush(R1,R2,R3,R4,R6,R7,R8,R9);
+call MOD_2;
+multipop(R1,R2,R3,R4,R6,R7,R8,R9);
+[PTBR+no]=retn;
+no=no+1;
+[PTBR+no]="0110";
+no=no+1;
+endwhile;
+no=8;
+alias entry R10;
+entry=8;
+while(entry<16) do
+breakpoint;
+if([INODE_TABLE+cnt*16+no]!=-1) then
+multipush(R1,R2,R3,R4,R6,R7,R8,R9,R10);
+call MOD_2;
+multipop(R1,R2,R3,R4,R6,R7,R8,R9,R10);
+[PTBR+entry]=retn;
+entry=entry+1;
+[PTBR+entry]="0100";
+entry=entry+1;
+no=no+1;
+else
+[PTBR+entry]=-1;
+entry=entry+1;
+[PTBR+entry]="0000";
+entry=entry+1;
+no=no+1;
+endif;
+endwhile;
+multipush(R1,R2,R3,R4,R6,R7,R8,R9,R10);
+call MOD_2;
+multipop(R1,R2,R3,R4,R6,R7,R8,R9,R10);
+[PTBR+entry]=retn;
+entry=entry+1;
+[PTBR+entry]="0110";
+entry=entry+1;
+
+multipush(R1,R2,R3,R4,R6,R7,R8,R9,R10);
+call MOD_2;
+multipop(R1,R2,R3,R4,R6,R7,R8,R9,R10);
+[PTBR+entry]=retn;
+entry=entry+1;
+[PTBR+entry]="0110";
+entry=entry+1;
+[PTBR+0]=63;
+[PTBR+1]="0100";
+[PTBR+2]=64;
+[PTBR+3]="0100";
+alias pg R3;
+alias blk R4;
+funcnum=2;
+entry=8;
+no=8;
+while(entry<15) do
+if([PTBR+entry]!=-1) then
+pg=[PTBR+entry];
+blk=[INODE_TABLE+cnt*16+no];
+multipush(R1,R2,R3,R4,R6,R7,R8,R9,R10);
+call MOD_4;
+multipop(R1,R2,R3,R4,R6,R7,R8,R9,R10);
+endif;
+entry=entry+2;
+no=no+1;
+endwhile;
+[[PTBR+16]*512]=[[PTBR+8]*512+1];
+SP=512*8;
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
+ireturn;
