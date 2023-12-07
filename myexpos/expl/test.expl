@@ -1,0 +1,8 @@
+int main(){
+decl 
+int arr[10];
+enddecl
+begin
+return(0);
+end
+}

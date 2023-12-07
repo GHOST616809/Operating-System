@@ -1,0 +1,16 @@
+int main(){
+decl 
+int a,b,c;
+
+enddecl
+begin
+
+
+a=exposcall("Read",-1,c);
+b=exposcall("Exec","odd.xsm");
+ 
+
+
+return(0);
+end
+}

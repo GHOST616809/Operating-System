@@ -1,0 +1,26 @@
+type 
+stud{
+str name;
+int mrks;
+}
+endtype
+
+int main()
+{
+decl 
+int i,j,k;
+stud A;
+
+enddecl
+begin
+k=exposcall("Heapset");
+A=exposcall("Alloc",8);
+A.name="JOhn";
+A.mrks=32;
+i=exposcall("Write",-2,A.name);
+j=exposcall("Write",-2,A.mrks);
+
+
+return(0);
+end
+}

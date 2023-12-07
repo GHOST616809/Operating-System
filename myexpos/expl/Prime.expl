@@ -1,0 +1,24 @@
+int main(){
+decl 
+int flag,a,k,j;
+enddecl
+begin
+a=2;
+while(a<=100) do
+k=2;
+flag=-1;
+while(k<a) do
+if((a%k)==0) then
+flag=1;
+break;
+endif;
+k=k+1;
+endwhile;
+if(flag==-1) then
+j=exposcall("Write",-2,a);
+endif;
+a=a+1;
+endwhile;
+return(0);
+end
+}

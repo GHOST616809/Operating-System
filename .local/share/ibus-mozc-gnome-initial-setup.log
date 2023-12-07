@@ -1,0 +1,15 @@
+I: Current: @a(ss) []
+error: 31:expected ',' or ']' to follow array element
+
+Usage:
+  dconf write KEY VALUE 
+
+Write a new value to a key
+
+Arguments:
+  KEY         A key path (starting, but not ending with '/')
+  VALUE       The value to write (in GVariant format)
+
+E: dconf write failed. New: [('ibus', 'mozc-jp'), @a(ss) []
+I: Current: [('xkb', 'gb')]
+I: Done. New: [('ibus', 'mozc-jp'), ('xkb', 'gb')]
