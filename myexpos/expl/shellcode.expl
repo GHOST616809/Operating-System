@@ -1,0 +1,26 @@
+int main(){
+decl 
+int a,c,d,e,f,g;
+string b;
+enddecl
+begin
+a=exposcall("Write",-2,"Give command");
+a=exposcall("Read",-1,b);
+if(b=="Shutdown") then
+c=exposcall("Shutdown");
+else
+c=exposcall("Fork");
+d=exposcall("Write",-2,c);
+if(c!=0) then
+d=exposcall("Wait",c);
+d=exposcall("Write",-2,"Resume Execution");
+else
+e=exposcall("Exec",b);
+if(e==-1) then
+f=exposcall("Write",-2,"Bad Command");
+endif;
+endif;
+endif;
+return(0);
+end
+}

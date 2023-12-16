@@ -1,0 +1,23 @@
+int main(){
+decl 
+int a,b,c,d,e,f,g;
+enddecl
+begin
+a=exposcall("Fork");
+if(a!=0) then
+b=exposcall("Fork");
+if(b!=0) then 
+c=exposcall("Fork");
+if(c==0) then
+d=exposcall("Exec","pid.xsm");
+endif;
+else
+c=exposcall("Exec","pid.xsm");
+endif;
+else
+b=exposcall("Exec","pid.xsm");
+endif;
+
+return(0);
+end
+}

@@ -1,3 +1,7 @@
+loadi(24,37);
+loadi(25,38);
+loadi(32,45);
+loadi(33,46);
 loadi(18,31);
 loadi(19,32);
 loadi(61,2);
@@ -136,6 +140,7 @@ endwhile;
 
 
 [DISK_STATUS_TABLE]=0;
+breakpoint;
 return;
 
 

@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <application-state>
   <context id="">
-    <application id="org.gnome.Terminal.desktop" score="0" last-seen="1696946965"/>
-    <application id="org.gnome.Settings.desktop" score="4" last-seen="1696946960"/>
+    <application id="org.gnome.Terminal.desktop" score="1047" last-seen="1702362986"/>
+    <application id="org.gnome.Settings.desktop" score="4" last-seen="1701951522"/>
+    <application id="debian-xterm.desktop" score="0" last-seen="1702362989"/>
   </context>
 </application-state>

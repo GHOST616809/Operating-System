@@ -1,3 +1,4 @@
+breakpoint;
 [PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+12]=SP%512;
 multipush (BP);
 alias currentPID R0;
@@ -40,12 +41,14 @@ endif;
 [SYSTEM_STATUS_TABLE+1]=newPID;
 if([PROCESS_TABLE+newPID*16+4]=="CREATED") then
 PTBR=[PROCESS_TABLE+newPID*16 + 14];
+if(newPID==2) then
+print "child executed";
+endif;
 [PROCESS_TABLE+newPID*16 +4]="RUNNING";
-BP=[[PROCESS_TABLE+newPID*16+11]*512];
+SP=[PROCESS_TABLE+newPID*16+11]*512+[PROCESS_TABLE+newPID*16+12];
 multipop(BP);
 SP=[PROCESS_TABLE+newPID*16+13];
-
-[PROCESS_TABLE+ ([SYSTEM_STATUS_TABLE+1]*16)+9]=0;
+[PROCESS_TABLE+([SYSTEM_STATUS_TABLE+1]*16)+9]=0;
 
 
 ireturn;

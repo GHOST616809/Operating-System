@@ -46,6 +46,7 @@ ptr=ptr+1;
 [pgno*512+ptr]=-1;
 ptr=ptr+1;
 endwhile;
+breakpoint;
 [PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+4]="RUNNING";
 [PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+7]=cnt;
 funcnum=1;
