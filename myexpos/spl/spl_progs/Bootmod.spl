@@ -1,3 +1,10 @@
+loadi(62,5);
+loadi(10,23);
+loadi(11,24);
+loadi(28,41);
+loadi(29,42);
+loadi(30,43);
+loadi(31,44);
 loadi(24,37);
 loadi(25,38);
 loadi(32,45);
@@ -41,6 +48,26 @@ loadi(2,15);
 loadi(3,16);
 
 alias cnt R5;
+cnt=0;
+while(cnt<60) do
+[FILE_STATUS_TABLE]=-1;
+[FILE_STATUS_TABLE+1]=-1;
+cnt=cnt+1;
+endwhile;
+cnt=0;
+while(cnt<4) do
+[BUFFER_TABLE+cnt*4]=-1;
+[BUFFER_TABLE+cnt*4+1]=0;
+[BUFFER_TABLE+cnt*4+2]=-1;
+cnt=cnt+1;
+endwhile;
+cnt=0;
+while(cnt<32) do
+[SEMAPHORE_TABLE+cnt*4]=-1;
+[SEMAPHORE_TABLE+cnt*4+1]=0;
+cnt=cnt+1;
+endwhile;
+
 cnt=0;
 while(cnt<76) do
 [MEMORY_FREE_LIST+cnt]=1;

@@ -1,4 +1,3 @@
-breakpoint;
 [PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=8;
 alias usp R7;
 usp=SP;
@@ -19,7 +18,7 @@ SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13];
 [[PTBR+2*((usp-1)/512)]*512+((usp-1)%512)]=-1;
 ireturn;
 endif;
-
+breakpoint;
 
 if([PTBR+4]==-1) then
 funcnum=1;
@@ -62,20 +61,24 @@ multipush(R1,R2,R7,R9);
 call MOD_2;
 breakpoint;
 multipop(R1,R2,R7,R9);
-[PROCESS_TABLE+PID*16+11]=retn;
-[PROCESS_TABLE+PID*16+3]=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+3];
-[PROCESS_TABLE+PID*16+6]=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+6];
-[PROCESS_TABLE+PID*16+10]=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+10];
-[PROCESS_TABLE+PID*16+7]=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+7];
-[PROCESS_TABLE+PID*16+13]=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13];
+alias addr R12;
+alias tst R13;
+tst=PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16;
+addr=PROCESS_TABLE+PID*16;
+[addr+11]=retn;
+[addr+3]=[tst+3];
+[addr+6]=[tst+6];
+[addr+10]=[tst+10];
+[addr+7]=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+7];
+[addr+13]=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13];
 
-[PROCESS_TABLE+PID*16+9]=0;
-[PROCESS_TABLE+PID*16+0]=0;
-[PROCESS_TABLE+PID*16+12]=0;
-[PROCESS_TABLE+PID*16+2]=[SYSTEM_STATUS_TABLE+1];
-[PROCESS_TABLE+PID*16+4]="CREATED";
-[PROCESS_TABLE+PID*16+14]=tablebase+PID*20;
-[PROCESS_TABLE+PID*16+15]=20;
+[addr+9]=0;
+[addr+0]=0;
+[addr+12]=0;
+[addr+2]=[SYSTEM_STATUS_TABLE+1];
+[addr+4]="CREATED";
+[addr+14]=tablebase+PID*20;
+[addr+15]=20;
 breakpoint;
 alias cnt R10;
 cnt=2;
@@ -109,10 +112,21 @@ childst=[PROCESS_TABLE+PID*16+13];
 [[PROCESS_TABLE+PID*16+11]*512]=BP;
 [PROCESS_TABLE+PID*16+12]=0;
 breakpoint;
+nwstrt=[PROCESS_TABLE+PID*16+11]*512+496;
+strt=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512+496;
+cnt=0;
+while(cnt<8) do 
+[nwstrt+cnt*2]=[strt+cnt*2];
+[nwstrt+cnt*2+1]=[strt+cnt*2+1];
+
+if([strt+cnt*2]==1) then 
+[SEMAPHORE_TABLE+[strt+cnt*2+1]*4+1]=[SEMAPHORE_TABLE+[strt+cnt*2+1]*4+1]+1;
+endif;
+cnt=cnt+1;
+endwhile;
 [[PTBR+2*((usp-1)/512)]*512+((usp-1)%512)]=PID;
 [[tablebase+PID*20+2*((childst-1)/512)]*512+((childst-1)%512)]=0;
 [PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
 SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13];
-print"INt8 ended";
 breakpoint;
 ireturn;

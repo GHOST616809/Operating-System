@@ -1,8 +1,10 @@
 Fork
 tablebase
-print
 PTLR
 WAIT_MEM
+return
+print
+DISK
 
 
 

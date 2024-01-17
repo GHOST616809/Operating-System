@@ -15,7 +15,7 @@ multipop(R1,R2,R8);
 
 
 
-
+print "A";
 [PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+4]="TERMINATED";
 
 alias cnt R10;
@@ -29,7 +29,8 @@ break;
 endif;
 cnt=cnt+1;
 endwhile;
-
+print "flag is";
+print flag;
 if(flag==0) then
 halt;
 else

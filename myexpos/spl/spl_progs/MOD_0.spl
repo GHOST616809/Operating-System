@@ -4,6 +4,82 @@ alias retn R0;
 alias T_stat R3;
 T_stat=TERMINAL_STATUS_TABLE;
 
+if(funcnum==4) then
+alias PID R3;
+alias idx R2;
+while([FILE_STATUS_TABLE+idx*4]!=-1) do
+[PROCESS_TABLE+PID*16+4]=WAIT_FILE;
+[PROCESS_TABLE+PID*16+5]=idx;
+multipush(R1,R2,R3);
+call MOD_5;
+multipop(R1,R2,R3);
+endwhile;
+if([INODE_TABLE+idx*16]==-1) then
+retn=-1;
+return;
+endif;
+[FILE_STATUS_TABLE+idx*4]=PID;
+retn=0;
+return;
+endif;
+
+if(funcnum==5) then
+alias PID R3;
+alias idx R2;
+if([FILE_STATUS_TABLE+idx*4]!=PID) then
+retn=-1;
+return;
+endif;
+[FILE_STATUS_TABLE+idx*4]=-1;
+alias cnt R8;
+cnt=0;
+while(cnt<16) do
+if([PROCESS_TABLE+cnt*16+4]==WAIT_FILE&&[PROCESS_TABLE+cnt*16+5]==idx) then
+[PROCESS_TABLE+cnt*16+4]="READY";
+endif;
+cnt=cnt+1;
+endwhile;
+retn=0;
+endif;
+
+
+
+
+if(funcnm==6) then
+alias cnt R7;
+cnt=0;
+while(cnt<32) do 
+if([SEMAPHORE_TABLE+cnt*4+1]==0) then 
+[SEMAPHORE_TABLE+cnt*4+1]=1;
+retn=cnt;
+return;
+endif;
+cnt=cnt+1;
+endwhile; 
+retn=-1;
+return;
+endif;
+
+if(funcnm==7) then
+alias idx R2;
+alias pid R3;
+alias cnt R8;
+cnt=0;
+if([SEMAPHORE_TABLE+4*idx]==pid) then
+[SEMAPHORE_TABLE+4*idx]=-1;
+while(cnt<16) do
+if([PROCESS_TABLE+cnt*16+4]==WAIT_SEMAPHORE&&[PROCESS_TABLE+cnt*16+5]==idx) then
+[PROCESS_TABLE+cnt*16+4]="READY";
+endif;
+cnt=cnt+1;
+endwhile;
+endif;
+[SEMAPHORE_TABLE+4*idx+1]=[SEMAPHORE_TABLE+4*idx+1]-1;
+retn=0;
+return;
+endif;
+
+
 if(funcnm==8) then
 while([T_stat]!=0) do
 [PROCESS_TABLE+PID*16+4]=WAIT_TERMINAL;

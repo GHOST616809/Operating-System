@@ -38,7 +38,7 @@ while(cnt<2) do
 funcnum=1;
 multipush(R1,R2,R8,R9,EIP,EPN,EC,EMA);
 call MOD_2;
-[PTBR+(expgno+1)*2]=retn;
+[PTBR+expgno*2]=retn;
 [PTBR+expgno*2+1]="1110";
 multipop(R1,R2,R8,R9,EIP,EPN,EC,EMA);
 cnt=cnt+1;

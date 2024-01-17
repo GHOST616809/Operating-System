@@ -1,0 +1,47 @@
+type
+Share
+{
+  int isempty;
+  int data;
+}
+endtype
+
+decl
+  Share head;
+enddecl
+
+int main(){
+decl int a,b,c,d,cnt,e,f,g,h,x,temp,i;
+enddecl
+begin
+x=exposcall("Heapset");
+c=exposcall("Semget");
+head = exposcall("Alloc", 2);
+head.data=0;
+cnt=0;
+
+a=exposcall("Fork");
+
+if(a==0) then
+b=exposcall("SemLock",c);
+temp=head.data;
+if(temp==0) then
+head.data=5;
+endif;
+g=exposcall("Write",-2,head.data);
+d=exposcall("SemUnLock",c);
+while(cnt<20) do
+cnt=cnt+1;
+endwhile;       
+else
+e=exposcall("SemLock",c);
+f=exposcall("Write",-2,head.data);
+i=exposcall("SemUnLock",c);
+while(cnt<100) do
+cnt=cnt+1;
+endwhile;
+
+endif;
+return(0);
+end
+}

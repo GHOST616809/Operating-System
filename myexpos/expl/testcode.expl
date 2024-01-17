@@ -7,12 +7,9 @@ begin
 
 a=exposcall("Fork");
 d=exposcall("Write",-2,a);
-if(a!=0) then 
-b=exposcall("Exec","even.xsm");
-else
-b=exposcall("Write",-2,"Child");
+if(a!=0) then
+b=exposcall("Write",-2,"Hello");
 endif;
-
 return(0);
 end
 }

@@ -1,0 +1,76 @@
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13]=SP;
+alias usp R6;
+alias funcnum R1;
+alias cnt R9;
+alias retn R0;
+breakpoint;
+usp=SP;
+SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512-1;
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=[[PTBR+2*((usp-5)/512)]*512+((usp-5)%512)];
+if([PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]==17) then 
+alias PID R2;
+cnt=496;
+alias pg R7;
+alias ind R8;
+ind=0;
+pg=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11];
+while(cnt+pg*512<(pg+1)*512) do
+if([cnt+pg*512]==-1) then 
+break;
+endif;
+cnt=cnt+2;
+ind=ind+1;
+endwhile;
+breakpoint;
+if(ind==8) then
+[[PTBR+2*((usp-1)/512)]*512+((usp-1)%512)]=-1;
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
+SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13];
+ireturn;
+endif;
+funcnum=6;
+PID=[SYSTEM_STATUS_TABLE+1];
+multipush(R1,R2,R6,R7,R8,R9);
+call MOD_0;
+multipop(R1,R2,R6,R7,R8,R9);
+if(retn==-2) then
+[[PTBR+2*((usp-1)/512)]*512+((usp-1)%512)]=-2;
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
+SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13];
+ireturn;
+endif;
+
+[496+pg*512+ind*2]=1;
+[496+pg*512+ind*2+1]=retn;
+[[PTBR+2*((usp-1)/512)]*512+((usp-1)%512)]=ind;
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
+SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13];
+ireturn;
+endif;
+
+
+if([PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]==18) then
+cnt=496;
+alias pg R7;
+alias ind R2;
+alias PID R3;
+ind=[[PTBR+2*((usp-2)/512)]*512+((usp-2)%512)];
+if([[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512+cnt+ind]==0||ind>7||ind<0) then 
+[[PTBR+2*((usp-1)/512)]*512+((usp-1)%512)]=-1;
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
+SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13];
+ireturn;
+endif;
+ind=[[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512+cnt+ind+1];
+funcnum=7;
+PID=[SYSTEM_STATUS_TABLE+1];
+multipush(R1,R2,R3,R6,R7,R9);
+call MOD_0;
+multipop(R1,R2,R3,R6,R7,R9);
+[[PTBR+2*((usp-1)/512)]*512+((usp-1)%512)]=0;
+[[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512+cnt+ind+1]=-1;
+[[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512+cnt+ind]=-1;
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
+SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13];
+ireturn;
+endif;
