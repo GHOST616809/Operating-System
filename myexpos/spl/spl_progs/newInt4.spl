@@ -1,7 +1,6 @@
 breakpoint;
 [PROCESS_TABLE + [SYSTEM_STATUS_TABLE+1]*16 + 13] = SP;
 SP = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE+1]*16 + 11]*512 - 1;
-
 // instructionPointer+2, returnValue, Arguement3, Arguement2, Arguement1, systemCallNumber
 
 alias userSP R0;
@@ -16,14 +15,14 @@ currentPCB = PROCESS_TABLE + [SYSTEM_STATUS_TABLE+1]*16;
 alias returnAddress R11;
 returnAddress = [PTBR + 2*((userSP-1)/512)]*512 + (userSP-1)%512;
 
-if (systemCallNumber == INT_CREATE) then
+if (systemCallNumber == 1) then
     [currentPCB + 9] = 1;
 
     alias fileName R2;
     alias filePermission R3;
     fileName = [[PTBR + 2*((userSP-4)/512)]*512 + (userSP-4)%512];
     filePermission = [[PTBR + 2*((userSP-3)/512)]*512 + (userSP-3)%512];
-
+    print fileName;
     alias counter R5;
     counter = 0;
     while (counter < MAX_FILE_NUM) do
@@ -87,7 +86,7 @@ if (systemCallNumber == INT_CREATE) then
     ireturn;
 endif;
 
-if (systemCallNumber == INT_DELETE) then
+if (systemCallNumber == 4) then
     [PROCESS_TABLE + [SYSTEM_STATUS_TABLE]*16 + 9] = 4;
 
     alias fileName R2;

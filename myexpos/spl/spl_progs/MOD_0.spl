@@ -4,12 +4,16 @@ alias retn R0;
 alias T_stat R3;
 T_stat=TERMINAL_STATUS_TABLE;
 
-if(funcnum==4) then
-alias PID R3;
+if(funcnm==4) then
+
+alias Pid R3;
 alias idx R2;
+Pid=[SYSTEM_STATUS_TABLE+1];
+print Pid;
+print idx;
 while([FILE_STATUS_TABLE+idx*4]!=-1) do
-[PROCESS_TABLE+PID*16+4]=WAIT_FILE;
-[PROCESS_TABLE+PID*16+5]=idx;
+[PROCESS_TABLE+Pid*16+4]=WAIT_FILE;
+[PROCESS_TABLE+Pid*16+5]=idx;
 multipush(R1,R2,R3);
 call MOD_5;
 multipop(R1,R2,R3);
@@ -18,15 +22,16 @@ if([INODE_TABLE+idx*16]==-1) then
 retn=-1;
 return;
 endif;
-[FILE_STATUS_TABLE+idx*4]=PID;
+[FILE_STATUS_TABLE+idx*4]=Pid;
 retn=0;
 return;
 endif;
 
-if(funcnum==5) then
-alias PID R3;
+if(funcnm==5) then
+breakpoint;
+alias Pid R3;
 alias idx R2;
-if([FILE_STATUS_TABLE+idx*4]!=PID) then
+if([FILE_STATUS_TABLE+idx*4]!=Pid) then
 retn=-1;
 return;
 endif;
@@ -39,6 +44,7 @@ if([PROCESS_TABLE+cnt*16+4]==WAIT_FILE&&[PROCESS_TABLE+cnt*16+5]==idx) then
 endif;
 cnt=cnt+1;
 endwhile;
+breakpoint;
 retn=0;
 endif;
 

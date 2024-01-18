@@ -50,8 +50,8 @@ loadi(3,16);
 alias cnt R5;
 cnt=0;
 while(cnt<60) do
-[FILE_STATUS_TABLE]=-1;
-[FILE_STATUS_TABLE+1]=-1;
+[FILE_STATUS_TABLE+cnt*4]=-1;
+[FILE_STATUS_TABLE+cnt*4+1]=-1;
 cnt=cnt+1;
 endwhile;
 cnt=0;
@@ -62,6 +62,7 @@ while(cnt<4) do
 cnt=cnt+1;
 endwhile;
 cnt=0;
+[PROCESS_TABLE+16+3]=1;
 while(cnt<32) do
 [SEMAPHORE_TABLE+cnt*4]=-1;
 [SEMAPHORE_TABLE+cnt*4+1]=0;

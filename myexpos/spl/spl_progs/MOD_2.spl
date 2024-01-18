@@ -82,8 +82,10 @@ retn=pg;
 return;
 endif;
 if(funcnum==4) then 
+breakpoint;
 alias blk R2;
 [DISK_FREE_LIST+blk]=[DISK_FREE_LIST+blk]-1;
+breakpoint;
 return;
 endif;
 

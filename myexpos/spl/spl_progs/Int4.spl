@@ -1,8 +1,11 @@
+
 [PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13]=SP;
 alias usp R7;
 alias funcnum R1;
 usp=SP;
 SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512-1;
+alias retn R0;
+retn=[PTBR+2*((usp-1)/512)]*512+((usp-1)%512);
 alias mode R6;
 mode=[[PTBR+2*((usp-5)/512)]*512+((usp-5)%512)];
 alias name R5;
@@ -10,13 +13,13 @@ name=[[PTBR+2*((usp-4)/512)]*512+((usp-4)%512)];
 [PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=mode;
 alias cnt R8;
 cnt=0;
-alias present R9;
+alias idx R2;
 alias freeent R10;
 freeent=-1;
-present=-1;
+idx=-1;
 while(cnt<60) do
 if([INODE_TABLE+cnt*16+1]==name) then
-present=cnt;
+idx=cnt;
 endif;
 if([INODE_TABLE+cnt*16+1]==-1&&freeent==-1) then
 freeent=cnt;
@@ -25,24 +28,23 @@ cnt=cnt+1;
 endwhile;
 
 
-
 if(mode==1) then
-alias permission R9;
+alias permission R4;
 permission=[[PTBR+2*((usp-3)/512)]*512+((usp-3)%512)];
 cnt=0;
-if(present!=-1) then
-[[PTBR+2*((usp-1)/512)]*512+((usp-1)%512)]=0;
+if(idx!=-1) then
+[retn]=0;
 [PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
 SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13];
 ireturn;
 endif;
 if(freeent==-1) then
-[[PTBR+2*((usp-1)/512)]*512+((usp-1)%512)]=-1;
+[retn]=-1;
 [PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
 SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13];
 ireturn;
 endif;
-alias addr R5;
+alias addr R13;
 alias addr2 R12;
 addr2=ROOT_FILE+freeent*8;
 addr=INODE_TABLE+freeent*16;
@@ -62,70 +64,77 @@ endwhile;
 [addr2+3]=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+3];
 [addr2+4]=permission;
 [PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
-[[PTBR+2*((usp-1)/512)]*512+((usp-1)%512)]=0;
+[retn]=0;
 SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13];
 ireturn;
 endif;
 
-
+breakpoint;
 if(mode==4) then
-alias idx R2;
 alias PID R3;
 alias addr1 R11;
-addr1=INODE_TABLE+present*16;
-if(present==-1) then
-[[PTBR+2*((usp-1)/512)]*512+((usp-1)%512)]=0;
-idx=-1;
-endif;
-if([addr1]!=DATA) then
-[[PTBR+2*((usp-1)/512)]*512+((usp-1)%512)]=-1;
-idx=-1;
-endif;
+addr1=INODE_TABLE+idx*16;
 if(idx==-1) then
+[retn]=0;
+else
+if([addr1]!=DATA) then
+[retn]=-1;
+endif;
+endif;
+if(idx==-1||[addr1]!=DATA) then
 [PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
-SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13];
+SP=usp;
 ireturn;
 endif;
+breakpoint;
 funcnum=4;
-idx=present;
 PID=[SYSTEM_STATUS_TABLE+1];
+
 multipush(R1,R2,R3,R5,R6,R7,R8,R9,R10,R11);
 call MOD_0;
 multipop(R1,R2,R3,R5,R6,R7,R8,R9,R10,R11);
-if([FILE_STATUS_TABLE+present*4+1]!=-1) then
-[FILE_STATUS_TABLE+cnt*4]=-1;
+if([FILE_STATUS_TABLE+idx*4+1]!=-1) then
+[FILE_STATUS_TABLE+idx*4]=-1;
 [PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
-[[PTBR+2*((usp-1)/512)]*512+((usp-1)%512)]=-2;
-SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13];
+[retn]=-2;
+SP=usp;
 ireturn;
 endif;
 alias num R10;
+
+
+
 num=8;
-while(num<=11) do
+while(num<=11&&[addr1+2]!=0) do
 if([BUFFER_TABLE+([addr1+num]%4)*4]==[addr1+4]&&[BUFFER_TABLE+([addr1+num]%4)*4+1]==1) then
 [BUFFER_TABLE+([addr1+num]%4)*4+1]=0;
 endif;
 funcnum=4;
-multipush(R1,R2,R3,R5,R6,R7,R8,R9,R10);
+multipush(R0,R1,R2,R3,R5,R6,R7,R8,R9,R10,R11);
+idx=[addr1+num];
 call MOD_2;
-multipop(R1,R2,R3,R5,R6,R7,R8,R9,R10);
+multipop(R0,R1,R2,R3,R5,R6,R7,R8,R9,R10,R11);
+num=num+1;
 endwhile;
 num=0;
+
 while(num<=11) do
-if(num<5&&num>7) then
+if(num<5||num>7) then
 [INODE_TABLE+idx*16+num]=-1;
+print "A";
 endif;
 if(num<5) then
 [ROOT_FILE+idx*8+num]=-1;
 endif;
 num=num+1;
 endwhile;
+
 funcnum=5;
-multipush(R5,R6);
+multipush(R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11);
 call MOD_0;
-multipop(R5,R6);
+multipop(R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11);
 [PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
-[[PTBR+2*((usp-1)/512)]*512+((usp-1)%512)]=0;
+[retn]=0;
 SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13];
 ireturn;
 endif;
