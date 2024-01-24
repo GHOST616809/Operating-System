@@ -22,11 +22,16 @@ endif;
 if(funcnum==2) then
 alias pgno R2;
 pgno=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11];
-
 cnt=0;
 while(cnt<8) do
 if([[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512+496+cnt*2]==1) then
 funcnum=7;
+pgno=[[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512+496+cnt*2+1];
+multipush(R1,R2,R6);
+call MOD_0;
+multipop(R1,R2,R6);
+else
+funcnum=4;
 pgno=[[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512+496+cnt*2+1];
 multipush(R1,R2,R6);
 call MOD_0;

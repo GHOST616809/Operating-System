@@ -1,0 +1,71 @@
+alias temp R11;
+alias usp R7;
+usp=SP;
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13]=SP;
+alias retn R0;
+SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512-1;
+retn=[PTBR+2*((usp-1)/512)]*512+((usp-1)%512);
+alias name R2;
+name=[[PTBR+2*((usp-4)/512)]*512+((usp-4)%512)];
+alias cnt R8;
+cnt=0;
+alias addr R9;
+addr=PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16;
+alias funcnum R1;
+funcnum=[PTBR+2*((usp-5)/512)]*512+((usp-5)%512);
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=[funcnum];
+if([funcnum]==2) then
+while(cnt<8) do
+if([[addr+11]*512+496+cnt*2]==-1) then
+break;
+endif;
+cnt=cnt+1;
+endwhile;
+if(cnt==8) then
+[retn]=-3;
+SP=usp;
+[addr+9]=0;
+ireturn;
+endif;
+funcnum=3;
+multipush(R0,R1,R2,R7,R8,R9);
+call MOD_3;
+temp=retn;
+multipop(R0,R1,R2,R7,R8,R9);
+if(temp<0) then
+[retn]=temp;
+SP=usp;
+[addr+9]=0;
+ireturn;
+endif;
+[[addr+11]*512+496+cnt*2]=0;
+[[addr+11]*512+496+cnt*2+1]=temp;
+SP=usp;
+[addr+9]=0;
+[retn]=cnt;
+breakpoint;
+
+ireturn;
+endif;
+
+if(funcnum==3) then
+if(name>=8||[[addr+11]*512+496+name*2]!=0) then
+[retn]=-1;
+[addr+9]=0;
+ireturn;
+endif;
+
+funcnum=4;
+name=[[addr+11]*512+496+name*2+1];
+multipush(R0,R1,R2,R7,R8,R9);
+call MOD_3;
+multipop(R0,R1,R2,R7,R8,R9);
+[[addr+11]*512+496+name*2+1]=-1;
+[[addr+11]*512+496+name*2]=-1;
+SP=usp;
+[addr+9]=0;
+[retn]=0;
+ireturn;
+endif;
+
+

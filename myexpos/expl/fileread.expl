@@ -1,0 +1,43 @@
+
+
+int main()
+{
+decl
+    int semid, pid, temp, filedis, a;
+    string filename,data;
+enddecl
+begin
+    
+    filedis = exposcall("Open", "abc.dat");
+    semid = exposcall("Semget");
+
+    pid = exposcall("Fork");
+    a = 0;
+    
+    if(pid > 0) then
+        while(a==0) do
+            temp = exposcall("SemLock", semid);
+            a = exposcall("Read",filedis,data);
+            if(a==0) then 
+            temp = exposcall("Write",-2,data);
+	    endif;
+            temp = exposcall("SemUnLock", semid);
+        endwhile;
+        
+        temp = exposcall("Semrelease", semid);
+    else
+        while(a==0) do
+            temp = exposcall("SemLock", semid);
+            a = exposcall("Read",filedis,data);
+              if(a==0) then
+
+            temp = exposcall("Write",-2,data);
+		endif;           
+            temp = exposcall("SemUnLock", semid);
+        endwhile;
+        temp = exposcall("Semrelease", semid);
+    endif;
+    temp=exposcall("Shutdown");
+    return 0;
+end
+}

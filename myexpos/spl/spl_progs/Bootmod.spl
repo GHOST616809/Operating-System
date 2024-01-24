@@ -1,3 +1,7 @@
+loadi(12,25);
+loadi(13,26);
+loadi(46,59);
+loadi(47,60);
 loadi(62,5);
 loadi(10,23);
 loadi(11,24);
@@ -49,6 +53,16 @@ loadi(3,16);
 
 alias cnt R5;
 cnt=0;
+while(cnt<32) do
+[OPEN_FILE_TABLE+cnt*4]=-1;
+[OPEN_FILE_TABLE+cnt*4+1]=0;
+[OPEN_FILE_TABLE+cnt*4+2]=-1;
+cnt=cnt+1;
+endwhile;
+
+cnt=0;
+
+
 while(cnt<60) do
 [FILE_STATUS_TABLE+cnt*4]=-1;
 [FILE_STATUS_TABLE+cnt*4+1]=-1;

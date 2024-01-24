@@ -1,0 +1,162 @@
+
+alias funcnum R1;
+alias r2 R2;
+alias r3 R3;
+alias r4 R4;
+alias retn R0;
+alias idx R6;
+alias cnt R7;
+if(funcnum==2) then
+
+idx=(r2)%4;
+funcnum=1;
+breakpoint;
+multipush(R0,R1,R2,R3,R4,R6,R7) ;
+r2=idx;
+r3=[SYSTEM_STATUS_TABLE+1];
+call MOD_0;
+multipop(R0,R1,R2,R3,R4,R6,R7);
+if(r2!=[BUFFER_TABLE+idx*4]) then
+if([BUFFER_TABLE+idx*4+1]!=0) then
+ funcnum=1;
+multipush(R0,R1,R2,R3,R4,R6,R7);
+r2=[SYSTEM_STATUS_TABLE+1];
+r3=(71+idx);
+r4=[BUFFER_TABLE+idx*4];
+call MOD_4;
+multipop(R0,R1,R2,R3,R4,R6,R7);
+[BUFFER_TABLE+idx*4+1]=0;
+endif;
+endif;
+ funcnum=2;
+multipush(R0,R1,R2,R3,R4,R6,R7);
+
+r4=r2;
+r2=[SYSTEM_STATUS_TABLE+1];
+r3=(71+idx);
+call MOD_4; 
+multipop(R0,R1,R2,R3,R4,R6,R7);
+
+[BUFFER_TABLE+idx*4]=r2;
+[[PTBR+2*(r4/512)]*512+(r4)%512]=[(71+idx)*512+r3];
+
+[BUFFER_TABLE+idx*4+1]=0;
+
+funcnum=2;
+multipush(R0,R1,R2,R3,R4,R6,R7) ;
+
+r2=idx;
+r3=[SYSTEM_STATUS_TABLE+1];
+
+
+breakpoint;
+call MOD_0;
+multipop(R0,R1,R2,R3,R4,R6,R7);
+
+return;
+endif;
+
+
+
+
+
+
+
+
+
+
+if(funcnum==3) then
+breakpoint;
+cnt=0;
+breakpoint;
+while(cnt<60) do
+if([INODE_TABLE+cnt*16+1]==r2) then
+idx=cnt;
+endif;
+cnt=cnt+1;
+endwhile;
+breakpoint;
+if([INODE_TABLE+idx*16]==-1) then
+retn=-1;
+return;
+endif;
+funcnum=4;
+multipush(R1,R2,R3,R6,R7);
+
+r2=idx;
+r3=[SYSTEM_STATUS_TABLE+1];
+call MOD_0;
+multipop(R1,R2,R3,R6,R7);
+if([INODE_TABLE+idx*16]==EXEC) then
+funcnum=5;
+multipush(R1,R2,R3,R6,R7);
+r2=idx;
+r3=[SYSTEM_STATUS_TABLE+1];
+call MOD_0;
+multipop(R1,R2,R3,R6,R7);
+retn=-1;
+return;
+endif;
+cnt=0;
+while(cnt<32) do
+if([OPEN_FILE_TABLE+cnt*4]==-1) then
+break;
+endif;
+cnt=cnt+1;
+endwhile;
+if(cnt==32) then
+funcnum=5;
+multipush(R1,R2,R3,R6,R7);
+r2=idx;
+r3=[SYSTEM_STATUS_TABLE+1];
+call MOD_0;
+multipop(R1,R2,R3,R6,R7);
+retn=-2;
+return;
+endif;
+
+if(r2=="root") then
+[OPEN_FILE_TABLE+cnt*4]=INODE_ROOT;
+else
+if([FILE_STATUS_TABLE+idx*4+1]==-1) then
+[FILE_STATUS_TABLE+idx*4+1]=1;
+else
+[FILE_STATUS_TABLE+idx*4+1]=[FILE_STATUS_TABLE+idx*4+1]+1;
+
+breakpoint;
+endif;
+endif;
+[OPEN_FILE_TABLE+cnt*4]=idx;
+
+[OPEN_FILE_TABLE+cnt*4+1]=1;
+[OPEN_FILE_TABLE+cnt*4+2]=0;
+
+breakpoint;
+funcnum=5;
+r2=idx;
+r3=[SYSTEM_STATUS_TABLE+1];
+multipush(R1,R2,R3,R6,R7);
+call MOD_0;
+multipop(R1,R2,R3,R6,R7);
+
+retn=cnt;
+return;
+endif;
+
+if(funcnum==4) then
+breakpoint;
+idx=[OPEN_FILE_TABLE+r2*4];
+[OPEN_FILE_TABLE+r2*4+1]=[OPEN_FILE_TABLE+r2*4+1]-1;
+if([OPEN_FILE_TABLE+r2*4+1]==0) then
+if([OPEN_FILE_TABLE+r2*4]!=INODE_ROOT) then
+[FILE_STATUS_TABLE+idx*4+1]=[FILE_STATUS_TABLE+idx*4+1]-1;
+if([FILE_STATUS_TABLE+idx*4+1]==0) then
+[FILE_STATUS_TABLE+idx*4+1]=-1;
+endif;
+endif;
+[OPEN_FILE_TABLE+r2*4]=-1;
+[OPEN_FILE_TABLE+r2*4+1]=-1;
+[OPEN_FILE_TABLE+r2*4+2]=-1;
+endif;
+return;
+endif;
