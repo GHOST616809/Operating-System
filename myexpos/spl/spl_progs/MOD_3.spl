@@ -6,20 +6,24 @@ alias r4 R4;
 alias retn R0;
 alias idx R6;
 alias cnt R7;
-if(funcnum==2) then
+
+
+if(funcnum==2||funcnum==1) then
 
 idx=(r2)%4;
+multipush(R0,R1,R2,R3,R4,R6,R7) ;
+
 funcnum=1;
 breakpoint;
-multipush(R0,R1,R2,R3,R4,R6,R7) ;
+
 r2=idx;
 r3=[SYSTEM_STATUS_TABLE+1];
 call MOD_0;
 multipop(R0,R1,R2,R3,R4,R6,R7);
 if(r2!=[BUFFER_TABLE+idx*4]) then
 if([BUFFER_TABLE+idx*4+1]!=0) then
+multipush(R0,R1,R2,R3,R4,R6,R7) ;
  funcnum=1;
-multipush(R0,R1,R2,R3,R4,R6,R7);
 r2=[SYSTEM_STATUS_TABLE+1];
 r3=(71+idx);
 r4=[BUFFER_TABLE+idx*4];
@@ -27,20 +31,24 @@ call MOD_4;
 multipop(R0,R1,R2,R3,R4,R6,R7);
 [BUFFER_TABLE+idx*4+1]=0;
 endif;
-endif;
- funcnum=2;
+ 
 multipush(R0,R1,R2,R3,R4,R6,R7);
-
+funcnum=2;
 r4=r2;
 r2=[SYSTEM_STATUS_TABLE+1];
 r3=(71+idx);
 call MOD_4; 
 multipop(R0,R1,R2,R3,R4,R6,R7);
-
 [BUFFER_TABLE+idx*4]=r2;
-[[PTBR+2*(r4/512)]*512+(r4)%512]=[(71+idx)*512+r3];
+endif;
+if(funcnum==2) then
+[[PTBR+2*(r4/512)]*512+(r4%512)]=[(71+idx)*512+r3];
 
-[BUFFER_TABLE+idx*4+1]=0;
+else
+[(71+idx)*512+r3]=[r4];
+
+[BUFFER_TABLE+idx*4+1]=1;
+endif;
 
 funcnum=2;
 multipush(R0,R1,R2,R3,R4,R6,R7) ;

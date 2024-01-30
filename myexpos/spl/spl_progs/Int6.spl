@@ -30,9 +30,9 @@ idx=[[PROCESS_TABLE+PID*16+11]*512+496+r2*2+1];
 alias inodeidx R6;
 inodeidx=[OPEN_FILE_TABLE+idx*4];
 funcnum=4;
-r2=inodeidx;
-multipush(R0,R1,R2,R3,R5,R6,R7,R8,R9,R10,R11);
 
+multipush(R0,R1,R2,R3,R5,R6,R7,R8,R9,R10,R11);
+r2=inodeidx;
 r3=[SYSTEM_STATUS_TABLE+1];
 call MOD_0;
 if(retn==-1) then

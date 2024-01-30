@@ -2,36 +2,72 @@
 alias usp R8;
 usp=SP;
 alias funcnum R1;
-alias PID R2;
-alias pgno R3;
-alias blk R4;
+alias r2 R2;
+alias r3 R3;
+alias r4 R4;
+alias cnt R7;
 SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512-1;
 [PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=[[PTBR+2*((usp-5)/512)]*512+((usp-5)%512)];
-if([SYSTEM_STATUS_TABLE+1]!=1) then
+if([SYSTEM_STATUS_TABLE+1]!=1&&[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+3]!=ROOT) then
 [[PTBR+2*((usp-1)/512)]*512+((usp-1)%512)]=-1;
 [PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
 SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13];
 ireturn;
 endif;
+cnt=3;
+while(cnt<16) do
+if([PROCESS_TABLE+cnt*16+4]!="TERMINATED") then
+funcnum=5;
+multipush(R1,R2,R3,R4,R5,R6,R7,R8,R9);
+r2=cnt;
+call MOD_1;
+multipop(R1,R2,R3,R4,R5,R6,R7,R8,R9);
+endif;
+cnt=cnt+1;
+endwhile;
+
+cnt=0;
+while(cnt<4) do
+if([BUFFER_TABLE+cnt*4+1]==1) then
 funcnum=1;
-PID=[SYSTEM_STATUS_TABLE+1];
-pgno=59;
-blk=3;
+
+multipush(R1,R2,R3,R4,R5,R6,R7,R8,R9);
+r2=[SYSTEM_STATUS_TABLE+1];
+r3=71+cnt;
+r4=[BUFFER_TABLE+cnt*4];
+call MOD_4;
+multipop(R1,R2,R3,R4,R5,R6,R7,R8,R9);
+endif;
+cnt=cnt+1;
+endwhile;
+
+
+
+
+
+
+
+
+
+funcnum=1;
+r2=[SYSTEM_STATUS_TABLE+1];
+multipush(R1,R2,R3,R4,R5,R6,R7,R8,R9);
+r3=59;
+r4=3;
+call MOD_4;
+multipop(R1,R2,R3,R4,R5,R6,R7,R8,R9);
+r3=60;
+r4=4;
 multipush(R1,R2,R3,R4,R5,R6,R7,R8,R9);
 call MOD_4;
 multipop(R1,R2,R3,R4,R5,R6,R7,R8,R9);
-pgno=60;
-blk=4;
+r3=61;
+r4=2;
 multipush(R1,R2,R3,R4,R5,R6,R7,R8,R9);
 call MOD_4;
 multipop(R1,R2,R3,R4,R5,R6,R7,R8,R9);
-pgno=61;
-blk=2;
-multipush(R1,R2,R3,R4,R5,R6,R7,R8,R9);
-call MOD_4;
-multipop(R1,R2,R3,R4,R5,R6,R7,R8,R9);
-pgno=62;
-blk=5;
+r3=62;
+r4=5;
 multipush(R1,R2,R3,R4,R5,R6,R7,R8,R9);
 call MOD_4;
 multipop(R1,R2,R3,R4,R5,R6,R7,R8,R9);

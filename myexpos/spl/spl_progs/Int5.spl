@@ -5,15 +5,80 @@ usp=SP;
 alias retn R0;
 SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512-1;
 retn=[PTBR+2*((usp-1)/512)]*512+((usp-1)%512);
-alias name R2;
-name=[[PTBR+2*((usp-4)/512)]*512+((usp-4)%512)];
+
+alias r2 R2;
+r2=[[PTBR+2*((usp-4)/512)]*512+((usp-4)%512)];
+alias r3 R3;
+r3=[[PTBR+2*((usp-3)/512)]*512+((usp-3)%512)];
+
 alias cnt R8;
+
 cnt=0;
 alias addr R9;
 addr=PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16;
 alias funcnum R1;
 funcnum=[PTBR+2*((usp-5)/512)]*512+((usp-5)%512);
 [PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=[funcnum];
+
+if([funcnum]==6) then
+
+if(r2>7||r2<0||[[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512+496+r2*2]==1) then
+[retn]=-1;
+SP=usp;
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
+ireturn;
+endif;
+alias idx R5;
+idx=[[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512+496+r2*2+1];
+alias inodeidx R6;
+inodeidx=[OPEN_FILE_TABLE+idx*4];
+funcnum=4;
+multipush(R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10);
+r2=inodeidx;
+r3=[SYSTEM_STATUS_TABLE+1];
+call MOD_0;
+temp=retn;
+multipop(R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10);
+if(temp==-1) then
+[retn]=-1;
+SP=usp;
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
+ireturn;
+endif;
+alias lseek R10;
+lseek=[OPEN_FILE_TABLE+idx*4+2];
+if(r3==0) then
+[OPEN_FILE_TABLE+idx*4+2]=0;
+else
+if(r3+lseek>[INODE_TABLE+inodeidx*16+2]) then
+[OPEN_FILE_TABLE+idx*4+2]=[INODE_TABLE+inodeidx*16+2];
+else
+if(r3+lseek<0) then
+[retn]=-1;
+SP=usp;
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
+ireturn;
+endif;
+[OPEN_FILE_TABLE+idx*4+2]=lseek+r3;
+
+endif;
+endif;
+
+funcnum=5;
+multipush(R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10);
+r2=inodeidx;
+r3=[SYSTEM_STATUS_TABLE+1];
+call MOD_0;
+multipop(R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10);
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
+SP=usp;
+[retn]=0;
+ireturn;
+endif;
+
+
+
+
 if([funcnum]==2) then
 while(cnt<8) do
 if([[addr+11]*512+496+cnt*2]==-1) then
@@ -49,19 +114,19 @@ ireturn;
 endif;
 
 if(funcnum==3) then
-if(name>=8||[[addr+11]*512+496+name*2]!=0) then
+if(r2>=8||[[addr+11]*512+496+(r2)*2]!=0) then
 [retn]=-1;
 [addr+9]=0;
 ireturn;
 endif;
 
 funcnum=4;
-name=[[addr+11]*512+496+name*2+1];
+r2=[[addr+11]*512+496+(r2)*2+1];
 multipush(R0,R1,R2,R7,R8,R9);
 call MOD_3;
 multipop(R0,R1,R2,R7,R8,R9);
-[[addr+11]*512+496+name*2+1]=-1;
-[[addr+11]*512+496+name*2]=-1;
+[[addr+11]*512+496+(r2)*2+1]=-1;
+[[addr+11]*512+496+(r2)*2]=-1;
 SP=usp;
 [addr+9]=0;
 [retn]=0;

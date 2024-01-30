@@ -1,0 +1,50 @@
+int main(){
+decl
+int x,semget,rd,data,cpid,a,b,c,d,e,f,g,cnt,res,semlock,semunlock,lseek;
+string wrd;
+enddecl
+begin
+cnt=0;
+rd=0;
+x=0;
+semget=exposcall("Semget");
+a=exposcall("Create","testfile2.dat",1);
+
+cpid=exposcall("Fork");
+if(cpid!=0) then
+c=exposcall("Open","testfile2.dat");
+
+while(cnt<5) do
+semlock=exposcall("SemLock",semget);
+d=exposcall("Write",c,cnt);
+semunlock=exposcall("SemUnLock",semget);
+x=0;
+while(x<10) do
+x=x+1;
+endwhile;
+cnt=cnt+1;
+endwhile;
+else
+
+
+c=exposcall("Open","testfile2.dat");
+while(rd<5) do
+semlock=exposcall("SemLock",semget);
+d=exposcall("Read",c,wrd);
+if(d==0) then
+e=exposcall("Write",-2,wrd);
+endif;
+semunlock=exposcall("SemUnLock",semget);
+rd=rd+1;
+endwhile;
+
+endif;
+
+b=exposcall("Shutdown");
+return(0);
+end
+}
+
+
+
+

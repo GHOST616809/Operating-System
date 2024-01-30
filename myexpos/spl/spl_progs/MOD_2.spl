@@ -88,4 +88,17 @@ alias blk R2;
 breakpoint;
 return;
 endif;
-
+if(funcnum==3) then
+alias cnt R6;
+cnt=69;
+while(cnt<=255) do
+if([DISK_FREE_LIST+cnt]==0) then
+[DISK_FREE_LIST+cnt]=1;
+retn=cnt;
+return;
+endif;
+cnt=cnt+1;
+endwhile;
+retn=-1;
+return;
+endif;

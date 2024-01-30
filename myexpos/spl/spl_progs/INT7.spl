@@ -1,42 +1,114 @@
 breakpoint;
 [PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=[[PTBR+2*(SP-5)]*512+(SP-5)%512];
 [PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13]=SP;
-alias usp R0;
+alias retn R0;
+alias usp R9;
+alias funcnum R1;
 usp=SP;
+retn=[PTBR+2*((usp-1)/512)]*512+((usp-1)%512);
 SP=512*[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]-1;
-alias Physicaladfuncdesc R1;
-Physicaladfuncdesc=(usp-4)/512;
-alias phypgno R2;
-phypgno=[PTBR+2*(Physicaladfuncdesc)];
-alias addr R10;
-addr=512*phypgno+(usp-4)%512;
-alias val R4;
-val=[addr];
+alias r2 R2;
+alias r3 R3;
+alias r4 R4;
+alias val R10;
+alias temp R12;
+alias addr R13;
+addr=PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16;
+val=[[PTBR+2*((usp-4)/512)]*512+(usp-4)%512];
 
-alias wrdpg R11;
-wrdpg=(usp-3)/512;
-alias wrd R3;
-wrd=[[PTBR+2*wrdpg]*512+(usp-3)%512];
+r3=[PTBR+2*((usp-3)/512)]*512+(usp-3)%512;
+
 if(val!=-2)
 then
-alias retval R5;
-alias retvalgpg R6;
-alias pgno R7;
-alias retvadd R8;
-retvalgpg=(usp-1)/512;
-pgno=[PTBR+2*(retvalgpg)];
-retvadd=512*pgno+(usp-1)%512;
-[retvadd]=-1;
+if(val>7||val<0||[512*[addr+11]+496+val*2]==1) then
+[addr+9]=0;
+SP=usp;
+[retn]=-1;
+ireturn;
+endif;
+alias idx R8;
+idx=[512*[addr+11]+496+val*2+1];
+alias inodeidx R7;
+inodeidx=[OPEN_FILE_TABLE+idx*4];
+if(([INODE_TABLE+inodeidx*16+4]==EXCLUSIVE)&&([addr+3]!="root")&&[INODE_TABLE+inodeidx*16+3]!=[addr+3]) then
+[retn]=-3;
+[addr+9]=0;
+SP=usp;
+ireturn;
+endif;
+multipush(R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R13);
+
+funcnum=4;
+r2=inodeidx;
+r3=[SYSTEM_STATUS_TABLE+1];
+
+call MOD_0;
+multipop(R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R13);
+val=[OPEN_FILE_TABLE+idx*4+2];
+if(val==2048) then
+[retn]=-2;
+[addr+9]=0;
+SP=usp;
+ireturn;
+endif;
+if(val%512==0&&val==[INODE_TABLE+inodeidx*16+2]) then
+
+multipush(R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R13);
+funcnum=3;
+call MOD_2;
+temp=retn;
+multipop(R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R13);
+if(temp==-1) then
+funcnum=5;
+r2=inodeidx;
+r3=[SYSTEM_STATUS_TABLE+1];
+multipush(R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R13);
+call MOD_0;
+multipop(R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R13);
+[retn]=-2;
+[addr+9]=0;
+SP=usp;
+ireturn;
+endif;
+[INODE_TABLE+inodeidx*16+8+(val/512)]=temp;
+endif;
+multipush(R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R13);
+
+funcnum=1;
+r2=[INODE_TABLE+inodeidx*16+8+(val/512)];
+r4=r3;
+r3=val%512;
+
+
+call MOD_3;
+multipop(R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R13);
+if(val==[INODE_TABLE+inodeidx*16+2]) then
+[INODE_TABLE+inodeidx*16+2]=[INODE_TABLE+inodeidx*16+2]+1;
+[ROOT_FILE+inodeidx*8+1]=[ROOT_FILE+inodeidx*8+1]+1;
+endif;
+[OPEN_FILE_TABLE+idx*16+2]=[OPEN_FILE_TABLE+idx*16+2]+1;
+funcnum=5;
+r2=inodeidx;
+r3=[SYSTEM_STATUS_TABLE+1];
+multipush(R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R13);
+call MOD_0;
+multipop(R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R13);
+breakpoint;
+[retn]=0;
+[addr+9]=0;
+SP=usp;
+ireturn;
 
 else
 
-multipush(R0,R1,R2,R3,R4,R5,R6,R7,R8,R10,R11);
+multipush(R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R13);
 alias funcnum R1;
 funcnum=3;
 alias PID R2;
-PID=[SYSTEM_STATUS_TABLE+1]; 
+PID=[SYSTEM_STATUS_TABLE+1];
+r3=[r3]; 
 call MOD_4;
-multipop(R0,R1,R2,R3,R4,R5,R6,R7,R8,R10,R11);
+multipop(R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R13);
 alias retval R2;
 alias retvalgpg R3;
 alias pgno R4;
@@ -47,9 +119,8 @@ retvadd=512*pgno+(usp-1)%512;
 [retvadd]=0;
 
 
-endif;
 SP=usp;
-[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
+[addr+9]=0;
 ireturn;
-
+endif;
 

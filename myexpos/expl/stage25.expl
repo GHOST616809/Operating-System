@@ -1,0 +1,24 @@
+int main(){
+decl 
+int a,b,c,d,e,f,cnt,res;
+string wrd;
+enddecl
+begin
+a=exposcall("Create","testfile.dat",1);
+c=exposcall("Open","testfile.dat");
+cnt=9;
+res=exposcall("Seek",c,cnt);
+
+res=0;
+while(res==0) do
+d=exposcall("Read",c,wrd);
+e=exposcall("Write",-2,wrd);
+res=exposcall("Seek",c,-2);
+
+
+endwhile;
+
+b=exposcall("Shutdown");
+return(0);
+end
+}
