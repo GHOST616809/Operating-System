@@ -1,4 +1,4 @@
-breakpoint;
+
 [PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+12]=SP%512;
 multipush (BP);
 alias currentPID R0;

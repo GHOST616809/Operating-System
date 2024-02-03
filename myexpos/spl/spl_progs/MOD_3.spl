@@ -89,6 +89,8 @@ retn=-1;
 return;
 endif;
 funcnum=4;
+
+
 multipush(R1,R2,R3,R6,R7);
 
 r2=idx;

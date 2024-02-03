@@ -59,7 +59,9 @@ ireturn;
 endif;
 
 if([OPEN_FILE_TABLE+idx*4]==INODE_ROOT) then
-[phyadd]=[ROOT_FILE+Lseek];
+[[PTBR+2*((phyadd)/512)]*512+((phyadd)%512)]=[ROOT_FILE+Lseek];
+
+[OPEN_FILE_TABLE+idx*4+2]=[OPEN_FILE_TABLE+idx*4+2]+1;
 else
 alias blk R12;
 blk=[OPEN_FILE_TABLE+idx*4+2]/512;

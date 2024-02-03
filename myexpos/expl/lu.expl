@@ -1,0 +1,19 @@
+int main(){
+decl 
+int a,cnt,b,c,d,e,f;
+string wrd,x,y;
+enddecl
+begin
+cnt=0;
+while(cnt<16) do
+a=exposcall("Getuname",cnt);
+if(a!=-1) then
+b=exposcall("Write",-2,a);
+else
+break;
+endif;
+cnt=cnt+1;
+endwhile;
+return(0);
+end
+}

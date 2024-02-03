@@ -1,0 +1,22 @@
+int main(){
+decl 
+int a,b,c,d,e;
+string uname,pass;
+enddecl
+begin
+a=1;
+while(a==1) do
+b=exposcall("Read",-1,uname);
+c=exposcall("Read",-1,pass);
+d=exposcall("Login",uname,pass);
+if(d==-1) then
+e=exposcall("Write",-2,"Invalid Credentials");
+else
+if(d==-2) then
+e=exposcall("Write",-2,"Permission denied");
+endif;
+endif;
+endwhile;
+return(0);
+end
+}

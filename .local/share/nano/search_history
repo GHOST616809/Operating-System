@@ -9,9 +9,21 @@ add
 B
 tani
 tanishq
-root
 pgno
 MOD_3
+CREATED
+TERMINATED
+READY
+ROOT
+KERNEL
+root
+breakpoint
+OPEN_FILE_TABLE
+R12
+R13
+R11
+R7
+R14
 print
 
 

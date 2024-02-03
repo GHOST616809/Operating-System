@@ -1,0 +1,11 @@
+int main(){
+decl 
+int a,b,c,d,e;
+string wrd,x,y;
+enddecl
+begin
+b=exposcall("Read",-1,wrd);
+a=exposcall("Create",wrd,0);
+return(0);
+end
+}

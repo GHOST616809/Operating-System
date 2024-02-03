@@ -1,0 +1,23 @@
+int main(){
+decl 
+int a,b,c,d,e,f,g,l,m,cnt,n,uid;
+string wrd,x,y,usr;
+enddecl
+begin
+cnt=0;
+a=exposcall("Read",-1,usr);
+n=exposcall("Getuid",usr);
+b=exposcall("Open","root");
+while(cnt<60) do
+c=exposcall("Read",b,wrd);
+d=exposcall("Seek",b,2);
+e=exposcall("Read",b,uid);
+if(uid==n) then
+g=exposcall("Delete",wrd);
+endif;
+f=exposcall("Seek",b,4);
+cnt=cnt+1;
+endwhile;
+return(0);
+end
+}

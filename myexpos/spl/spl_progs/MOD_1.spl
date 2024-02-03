@@ -3,6 +3,7 @@ alias PID R2;
 alias retn R0;
 alias cnt R6;
 alias r3 R3;
+alias temp R12;
 if(funcnum==5) then
 cnt=0;
 while(cnt<60) do
@@ -65,37 +66,41 @@ endif;
 
 
 
-
+temp=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512+496;
 if(funcnum==2) then
 alias pgno R2;
 pgno=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11];
 cnt=0;
 while(cnt<8) do
-if([[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512+496+cnt*2]==1) then
+if([temp+cnt*2]==1) then
 funcnum=7;
-pgno=[[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512+496+cnt*2+1];
-multipush(R1,R2,R6);
+pgno=[temp+cnt*2+1];
+multipush(R1,R2,R6,R12);
 call MOD_0;
-multipop(R1,R2,R6);
+multipop(R1,R2,R6,R12);
 else
-funcnum=4;
-pgno=[[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512+496+cnt*2+1];
-multipush(R1,R2,R6);
+if([temp+cnt*2]==0) then
+multipush(R1,R2,R3,R6,R12);
+funcnum=5;
+r3=[SYSTEM_STATUS_TABLE+1];
+pgno=[OPEN_FILE_TABLE+[temp+cnt*2+1]*4];
 call MOD_0;
-multipop(R1,R2,R6);
+multipop(R1,R2,R3,R6,R12);
 endif;
-[[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512+496+cnt*2]=-1;
-[[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512+496+cnt*2+1]=-1;
+endif;
+[temp+cnt*2]=-1;
+[temp+cnt*2+1]=-1;
 cnt=cnt+1;
 endwhile;
 funcnum=2;
-multipush(R2,R6);
+multipush(R2,R6,R12);
 call MOD_2;
-multipop(R2,R6);
+multipop(R2,R6,R12);
 return;
 endif;
 
 if(funcnum==3) then 
+breakpoint;
 funcnum=4;
 multipush(R1,R2,R6);
 call MOD_1;

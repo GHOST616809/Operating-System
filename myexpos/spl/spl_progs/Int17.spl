@@ -1,0 +1,65 @@
+breakpoint;
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+13]=SP;
+alias usp R8;
+usp=SP;
+SP=[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+11]*512-1;
+alias r1 R1;
+alias r2 R2;
+alias retn R0;
+alias r3 R3;
+alias r4 R4;
+alias cnt R9;
+cnt=0;
+r1=[[PTBR+2*((usp-5)/512)]*512+((usp-5)%512)];
+retn=[PTBR+2*((usp-1)/512)]*512+((usp-1)%512);
+r2=[[PTBR+2*((usp-4)/512)]*512+((usp-4)%512)];
+r3=[[PTBR+2*((usp-3)/512)]*512+((usp-3)%512)];
+
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=r1;
+if([SYSTEM_STATUS_TABLE+1]!=1) then
+print "error1";
+[retn]=-2;
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
+SP=usp;
+ireturn;
+endif;
+while(cnt<16) do
+if([USER_TABLE+cnt*2]==r2) then
+break;
+endif;
+cnt=cnt+1;
+endwhile;
+if(cnt==16) then
+print "error2";
+[retn]=-1;
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
+SP=usp;
+ireturn;
+endif;
+
+
+
+
+encrypt r3;
+if([USER_TABLE+cnt*2+1]!=r3) then
+print "error4";
+[retn]=-1;
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
+SP=usp;
+ireturn;
+endif;
+
+[PROCESS_TABLE+2*16+4]="CREATED";
+[PROCESS_TABLE+2*16+3]=cnt;
+[PROCESS_TABLE+16+4]=WAIT_PROCESS;
+[PROCESS_TABLE+16+5]=2;
+[SYSTEM_STATUS_TABLE]=cnt;
+multipush(R0,R1,R2,R3,R4,R8,R9);
+call MOD_5;
+multipop(R0,R1,R2,R3,R4,R8,R9);
+
+[retn]=0;
+[PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+9]=0;
+SP=usp;
+ireturn;
+

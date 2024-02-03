@@ -1,0 +1,18 @@
+int main(){
+decl 
+int a,b,c,d,e,f,g,cnt;
+string wrd;
+enddecl
+begin
+a=exposcall("Open","root");
+cnt=0;
+while(cnt<60) do
+c=exposcall("Read",a,wrd);
+
+e=exposcall("Seek",a,7);
+f=exposcall("Write",-2,wrd);
+cnt=cnt+1;
+endwhile;
+return(0);
+end
+}

@@ -1,0 +1,27 @@
+int main(){
+decl  
+int a,b,c,d,e,f,cnt;
+
+string x,wrd;
+string y;
+enddecl
+begin
+a=exposcall("Read",-1,x);
+b=exposcall("Read",-1,y);
+cnt=0;
+c=exposcall("Open",x);
+d=exposcall("Open",y);
+
+while(cnt<512) do
+e=exposcall("Read",c,wrd);
+if(e==0) then
+f=exposcall("Write",d,wrd);
+else
+break;
+endif;
+cnt=cnt+1;
+endwhile;
+return(0);
+end
+}
+
