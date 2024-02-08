@@ -13,11 +13,24 @@ process_table_entry = PROCESS_TABLE + currentPID * 16;
 alias newPID R2;
 newPID=-1;
 
+if([SYSTEM_STATUS_TABLE+5]!=0) then
+if([SYSTEM_STATUS_TABLE+1]==15) then
+newPID=0;
+else
+if([PROCESS_TABLE+15*16+4]==WAIT_DISK) then
+newPID=0;
+else
+newPID=15;
+endif;
+endif;
+else
+
 alias cnt R12;
 cnt=currentPID+1;
-while(cnt<16) do 
 
-if([PROCESS_TABLE+cnt*16+4]=="READY"||[PROCESS_TABLE+cnt*16+4]=="CREATED") then
+while(cnt<15) do 
+
+if(([PROCESS_TABLE+cnt*16+4]=="READY"||[PROCESS_TABLE+cnt*16+4]=="CREATED")&&[PROCESS_TABLE+cnt*16+6]==0) then
 newPID=cnt;
 break;
 endif;
@@ -27,23 +40,23 @@ if(newPID==-1) then
 cnt=1;
 while(cnt<currentPID) do
 
-if([PROCESS_TABLE+cnt*16+4]=="READY"||[PROCESS_TABLE+cnt*16+4]=="CREATED") then
+if(([PROCESS_TABLE+cnt*16+4]=="READY"||[PROCESS_TABLE+cnt*16+4]=="CREATED")&&[PROCESS_TABLE+cnt*16+6]==0) then
 newPID=cnt;
 break;
 endif;
 cnt=cnt+1;
 endwhile;
 endif;
+
+
 if(newPID==-1) then 
 newPID=0;
 endif;
-
+endif;
 [SYSTEM_STATUS_TABLE+1]=newPID;
 if([PROCESS_TABLE+newPID*16+4]=="CREATED") then
+
 PTBR=[PROCESS_TABLE+newPID*16 + 14];
-if(newPID==2) then
-print "child executed";
-endif;
 [PROCESS_TABLE+newPID*16 +4]="RUNNING";
 SP=[PROCESS_TABLE+newPID*16+11]*512+[PROCESS_TABLE+newPID*16+12];
 multipop(BP);

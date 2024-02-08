@@ -114,6 +114,7 @@ ireturn;
 endif;
 
 if(funcnum==3) then
+breakpoint;
 if(r2>=8||[[addr+11]*512+496+(r2)*2]!=0) then
 [retn]=-1;
 [addr+9]=0;

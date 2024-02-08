@@ -64,7 +64,7 @@ return;
 endif;
 
 if(funcnm==5) then
-breakpoint;
+
 alias Pid R3;
 alias idx R2;
 Pid=[SYSTEM_STATUS_TABLE+1];
@@ -81,7 +81,7 @@ if([PROCESS_TABLE+cnt*16+4]==WAIT_FILE&&[PROCESS_TABLE+cnt*16+5]==idx) then
 endif;
 cnt=cnt+1;
 endwhile;
-breakpoint;
+
 retn=0;
 return;
 endif;

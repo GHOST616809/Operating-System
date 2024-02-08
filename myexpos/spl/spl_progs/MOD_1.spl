@@ -51,8 +51,8 @@ endif;
 
 
 if(funcnum==1) then 
-cnt=1;
-while(cnt<16) do 
+cnt=3;
+while(cnt<15) do 
 if([PROCESS_TABLE+cnt*16+4]=="TERMINATED") then
 retn=cnt;
 [PROCESS_TABLE+cnt*16+4]=ALLOCATED;

@@ -1,21 +1,38 @@
 alias funcnum R1;
 alias retn R0;
+
+if(funcnum==6) then
+alias cnt R7;
+cnt=256;
+while(cnt<=511) do
+if([DISK_FREE_LIST+cnt]==0) then
+retn=cnt;
+[DISK_FREE_LIST+cnt]=1;
+break;
+endif;
+cnt=cnt+1;
+endwhile;
+
+return;
+endif;
+
+
 if(funcnum==1) then
 [SYSTEM_STATUS_TABLE+3]=[SYSTEM_STATUS_TABLE+3]+1;
-breakpoint;
+
 while([SYSTEM_STATUS_TABLE+2]==0) do 
 [PROCESS_TABLE+[SYSTEM_STATUS_TABLE]*16+4]="WAIT_MEM";
 multipush(R1);
 call MOD_5;
 multipop(R1);
 endwhile;
-breakpoint;
+
 [SYSTEM_STATUS_TABLE+2]=[SYSTEM_STATUS_TABLE+2]-1;
 [SYSTEM_STATUS_TABLE+3]=[SYSTEM_STATUS_TABLE+3]-1;
 
 alias cnt R5;
 cnt=76;
-breakpoint;
+
 while(cnt<128) do 
 if([MEMORY_FREE_LIST+cnt]==0) then
 retn=cnt;
@@ -24,7 +41,7 @@ break;
 endif;
 cnt=cnt+1;
 endwhile;
-breakpoint;
+
 return;
 endif;
 
@@ -35,15 +52,16 @@ if([MEMORY_FREE_LIST+pgno]==0) then
 [SYSTEM_STATUS_TABLE+2]=[SYSTEM_STATUS_TABLE+2]+1;
 alias cnt R10;
 cnt=1;
-breakpoint;
+
 while(cnt<16) do 
 if([PROCESS_TABLE+cnt*16+4]=="WAIT_MEM") then
 [PROCESS_TABLE+cnt*16+4]="READY";
 endif;
 cnt=cnt+1;
 endwhile;
-breakpoint;
+
 endif;
+
 return;
 endif;
 if(funcnum==5) then 
@@ -82,10 +100,10 @@ retn=pg;
 return;
 endif;
 if(funcnum==4) then 
-breakpoint;
+
 alias blk R2;
 [DISK_FREE_LIST+blk]=[DISK_FREE_LIST+blk]-1;
-breakpoint;
+
 return;
 endif;
 if(funcnum==3) then

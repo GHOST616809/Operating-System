@@ -1,17 +1,7 @@
-loadi(67,9);
-loadi(68,10);
-loadi(34,47);
-loadi(35,48);
-loadi(26,39);
-loadi(27,40);
-loadi(36,49);
-loadi(37,50);
-loadi(12,25);
-loadi(13,26);
-loadi(28,41);
-loadi(29,42);
-loadi(30,43);
-loadi(31,44);
+loadi(46,59);
+loadi(47,60);
+
+
 loadi(24,37);
 loadi(25,38);
 loadi(32,45);
@@ -39,8 +29,6 @@ loadi(48,61);
 loadi(49,62);
 loadi(50,63);
 loadi(51,64);
-loadi(63,13);
-loadi(64,14);
 loadi(16,29);
 loadi(17,30);
 loadi(4,17);
@@ -52,13 +40,15 @@ loadi(22,35);
 loadi(23,36);
 loadi(2,15);
 loadi(3,16);
-
 alias cnt R5;
 cnt=0;
 while(cnt<32) do
 [OPEN_FILE_TABLE+cnt*4]=-1;
 [OPEN_FILE_TABLE+cnt*4+1]=0;
 [OPEN_FILE_TABLE+cnt*4+2]=0;
+if(cnt<16) then
+[PROCESS_TABLE+cnt*16]=0;
+endif;
 cnt=cnt+1;
 endwhile;
 
@@ -86,17 +76,21 @@ cnt=cnt+1;
 endwhile;
 
 cnt=0;
-while(cnt<76) do
+while(cnt<=76) do
 [MEMORY_FREE_LIST+cnt]=1;
 cnt=cnt+1;
 endwhile;
-cnt=86;
+cnt=81;
 while(cnt<128) do
+if(cnt==100||cnt==102||cnt==107||cnt==106||cnt==104||cnt==85) then
+[MEMORY_FREE_LIST+cnt]=1;
+else
 [MEMORY_FREE_LIST+cnt]=0;
+endif;
 cnt=cnt+1;
+
 endwhile;
 
-[MEMORY_FREE_LIST+76]=0;
 [MEMORY_FREE_LIST+66]=0;
 
 [MEMORY_FREE_LIST+77]=1;
@@ -106,12 +100,10 @@ endwhile;
 [MEMORY_FREE_LIST+80]=1;
 
 [MEMORY_FREE_LIST+85]=1;
-[MEMORY_FREE_LIST+100]=1;
 
-[MEMORY_FREE_LIST+102]=1;
-
-[MEMORY_FREE_LIST+104]=1;
-[SYSTEM_STATUS_TABLE+2]=47;
+[SYSTEM_STATUS_TABLE+2]=41;
+[SYSTEM_STATUS_TABLE+5]=0;
+[SYSTEM_STATUS_TABLE+4]=0;
 
 
 
@@ -144,6 +136,7 @@ PTLR=20;
 
 
 [PROCESS_TABLE+17]=1;
+[PROCESS_TABLE+22]=0;
 [PROCESS_TABLE+20]="CREATED";
 [PROCESS_TABLE+27]=77;
 [PROCESS_TABLE+28]=0;
@@ -152,13 +145,11 @@ PTLR=20;
 [PROCESS_TABLE+31]=PTLR;
 
 [66*512]=[65*512+1];
-
 cnt=2;
 while(cnt<16) do
 [PROCESS_TABLE+cnt*16+4]="TERMINATED";
 cnt=cnt+1;
 endwhile;
-
 alias ptr R13;
 ptr=496;
 while(ptr<512) do
@@ -202,7 +193,9 @@ endwhile;
 [PTBR+59]= "0110";
 
 
+
 [PROCESS_TABLE+34]=1;
+[PROCESS_TABLE+38]=0;
 [PROCESS_TABLE+33]=2;
 [PROCESS_TABLE+43]=104;
 [PROCESS_TABLE+44]=0;
@@ -220,6 +213,7 @@ endwhile;
 
 
 
+
 [DISK_STATUS_TABLE]=0;
-breakpoint;
+
 return;

@@ -8,11 +8,18 @@ a=exposcall("Create","testfile.dat",1);
 c=exposcall("Open","testfile.dat");
 cnt=0;
 while(cnt<10) do
-e=exposcall("Read",c,wrd);
-f=exposcall("Write",-2,wrd);
+f=exposcall("Read",-1,wrd);
+e=exposcall("Write",c,wrd);
 cnt=cnt+1;
 endwhile;
-b=exposcall("Shutdown");
+cnt=0;
+e=exposcall("Seek",c,0);
+while(cnt<10) do
+f=exposcall("Read",c,wrd);
+e=exposcall("Write",-2,wrd);
+cnt=cnt+1;
+endwhile;
+d=exposcall("Close",c);
 return(0);
 end
 }

@@ -58,6 +58,9 @@ while(no<8) do
 multipush(R1,R2,R3,R4,R6,R7,R8,R9);
 call MOD_2;
 multipop(R1,R2,R3,R4,R6,R7,R8,R9);
+[DISK_MAP_TABLE+[SYSTEM_STATUS_TABLE+1]*10+no]=[INODE_TABLE+cnt*16+no+4];
+[DISK_MAP_TABLE+[SYSTEM_STATUS_TABLE+1]*10+no+1]=[INODE_TABLE+cnt*16+no+5];
+
 [PTBR+no]=retn;
 no=no+1;
 [PTBR+no]="0110";

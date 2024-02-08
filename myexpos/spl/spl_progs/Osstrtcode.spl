@@ -1,12 +1,27 @@
-breakpoint;
-loadi(46,59);
-loadi(47,60);
+
 loadi(62,5);
 loadi(10,23);
 loadi(11,24);
 loadi(54,67);
 loadi(55,68);
 loadi(69,11);
+loadi(34,47);
+loadi(35,48);
+loadi(52,65);
+loadi(53,66);
+loadi(26,39);
+loadi(27,40);
+loadi(36,49);
+loadi(37,50);
+loadi(12,25);
+loadi(13,26);
+loadi(28,41);
+loadi(29,42);
+loadi(30,43);
+loadi(31,44);
+loadi(67,9);
+loadi(68,10);
+
 
 PTBR = PAGE_TABLE_BASE;
 PTLR=20;
@@ -32,19 +47,61 @@ PTLR=20;
 [PTBR+19]="0000";
 
 [PROCESS_TABLE+1]=0;
+[PROCESS_TABLE+6]=0;
 [PROCESS_TABLE+11]=76;
 [PROCESS_TABLE+4]="CREATED";
 [PROCESS_TABLE+13]=8*512;
 [PROCESS_TABLE+12]=0;
 [PROCESS_TABLE+14]=PTBR;
 [PROCESS_TABLE+15]=PTLR;
-
 SP=76*512-1;
+
+[PTBR+300]=63;
+[PTBR+301]="0100";
+[PTBR+302]=64;
+[PTBR+303]="0100";
+[PTBR+304]=-1;
+[PTBR+305]="0000";
+[PTBR+306]=-1;
+[PTBR+307]="0000";
+[PTBR+308]=69;
+[PTBR+309]="0100";
+[PTBR+310]=-1;
+[PTBR+311]="0000";
+[PTBR+312]=-1;
+[PTBR+313]="0000";
+[PTBR+314]=-1;
+[PTBR+315]="0000";
+[PTBR+316]=106;
+[PTBR+317]="0110";
+[PTBR+318]=-1;
+[PTBR+319]="0000";
+
+[PROCESS_TABLE+241]=0;
+[PROCESS_TABLE+246]=0;
+[PROCESS_TABLE+251]=107;
+[PROCESS_TABLE+253]=8*512;
+[PROCESS_TABLE+252]=0;
+[PROCESS_TABLE+254]=PTBR+20*15;
+[PROCESS_TABLE+255]=PTLR;
+[106*512]=[69*512+1];
+
+
+
+
+
+
+
+
 call BOOT_MODULE;
+
+[PROCESS_TABLE+15*16+4]="CREATED";
 
 [PROCESS_TABLE + 4]="RUNNING";
 [SYSTEM_STATUS_TABLE+1]=0;
 
 SP=8*512;
 [70*512]=[69*512+1];
+
+
 ireturn;

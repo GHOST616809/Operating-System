@@ -14,7 +14,7 @@ idx=(r2)%4;
 multipush(R0,R1,R2,R3,R4,R6,R7) ;
 
 funcnum=1;
-breakpoint;
+
 
 r2=idx;
 r3=[SYSTEM_STATUS_TABLE+1];
@@ -57,7 +57,7 @@ r2=idx;
 r3=[SYSTEM_STATUS_TABLE+1];
 
 
-breakpoint;
+
 call MOD_0;
 multipop(R0,R1,R2,R3,R4,R6,R7);
 
@@ -74,16 +74,15 @@ endif;
 
 
 if(funcnum==3) then
-breakpoint;
+
 cnt=0;
-breakpoint;
 while(cnt<60) do
 if([INODE_TABLE+cnt*16+1]==r2) then
 idx=cnt;
 endif;
 cnt=cnt+1;
 endwhile;
-breakpoint;
+
 if([INODE_TABLE+idx*16]==-1) then
 retn=-1;
 return;
@@ -133,7 +132,7 @@ if([FILE_STATUS_TABLE+idx*4+1]==-1) then
 else
 [FILE_STATUS_TABLE+idx*4+1]=[FILE_STATUS_TABLE+idx*4+1]+1;
 
-breakpoint;
+
 endif;
 endif;
 [OPEN_FILE_TABLE+cnt*4]=idx;
@@ -141,7 +140,7 @@ endif;
 [OPEN_FILE_TABLE+cnt*4+1]=1;
 [OPEN_FILE_TABLE+cnt*4+2]=0;
 
-breakpoint;
+
 funcnum=5;
 r2=idx;
 r3=[SYSTEM_STATUS_TABLE+1];
@@ -154,7 +153,7 @@ return;
 endif;
 
 if(funcnum==4) then
-breakpoint;
+
 idx=[OPEN_FILE_TABLE+r2*4];
 [OPEN_FILE_TABLE+r2*4+1]=[OPEN_FILE_TABLE+r2*4+1]-1;
 if([OPEN_FILE_TABLE+r2*4+1]==0) then

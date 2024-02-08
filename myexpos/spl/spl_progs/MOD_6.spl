@@ -1,0 +1,165 @@
+
+alias r1 R1;
+alias r2 R2;
+alias r3 R3;
+alias r4 R4;
+alias retn R0;
+alias cnt R10;
+alias tick R11;
+alias ptick R12;
+alias flag R7;
+alias x R6;
+cnt=0;
+tick=0;
+ptick=-1;
+flag=-1;
+x=-1;
+
+
+if(r1==1) then
+cnt=3;
+
+while(cnt<16) do
+if([PROCESS_TABLE+cnt*16+4]==WAIT_PROCESS) then
+flag=cnt;
+endif;
+if([PROCESS_TABLE+cnt*16+4]==WAIT_SEMAPHORE) then
+x=cnt;
+endif;
+if([PROCESS_TABLE+cnt*16]>tick&&[PROCESS_TABLE+cnt*16+4]=="READY") then
+ptick=cnt;
+tick=[PROCESS_TABLE+cnt*16];
+endif;
+cnt=cnt+1;
+endwhile;
+if(flag==-1&&x!=-1) then
+flag=x;
+endif;
+if(flag==-1&&x==-1&&ptick!=-1) then
+flag=ptick;
+endif;
+if(flag==-1) then
+[SYSTEM_STATUS_TABLE+5]=0;
+return;
+endif;
+
+[PROCESS_TABLE+flag*16]=0;
+cnt=4;
+alias pg R8;
+while(cnt<20) do
+pg=PAGE_TABLE_BASE+flag*20+cnt;
+
+if((cnt<8&&cnt>3)||(cnt<20&&cnt>15)) then
+if([MEMORY_FREE_LIST+[pg]]==1) then
+multipush(R1,R2,R3,R4,R6,R7,R8,R10,R11,R12);
+r1=6;
+call MOD_2;
+multipop(R1,R2,R3,R4,R6,R7,R8,R10,R11,R12);
+ptick=retn;
+[DISK_MAP_TABLE+flag*10+cnt/2]=ptick;
+multipush(R1,R2,R3,R4,R6,R7,R8,R10,R11,R12);
+r1=1;
+r2=15;
+r3=[pg];
+
+r4=ptick;
+call MOD_4;
+multipop(R1,R2,R3,R4,R6,R7,R8,R10,R11,R12);
+endif;
+endif;
+if([pg]!=-1) then
+multipush(R1,R2,R3,R4,R6,R7,R8,R10,R11,R12);
+r1=2;
+r2=[pg];
+call MOD_2;
+multipop(R1,R2,R3,R4,R6,R7,R8,R10,R11,R12);
+[pg]=-1;
+[pg+1]="0000";
+endif;
+
+cnt=cnt+2;
+endwhile;
+
+[SYSTEM_STATUS_TABLE+4]=[SYSTEM_STATUS_TABLE+4]+1;
+
+[SYSTEM_STATUS_TABLE+5]=0;
+[PROCESS_TABLE+flag*16+6]=1;
+return;
+endif;
+
+
+if(r1==2) then
+cnt=3;
+tick=1000;
+while(cnt<15) do 
+if([PROCESS_TABLE+cnt*16+6]==1&&[PROCESS_TABLE+cnt*16+4]=="READY"&&[PROCESS_TABLE+cnt*16]>tick) then
+ptick=cnt;
+tick=[PROCESS_TABLE+cnt*16];
+endif;
+cnt=cnt+1;
+endwhile;
+if(ptick==-1) then
+return;
+endif;
+PTBR=PAGE_TABLE_BASE;
+[PROCESS_TABLE+ptick*16]=0;
+cnt=4;
+alias pg R8;
+while(cnt<20) do
+if([DISK_MAP_TABLE+ptick*10+cnt/2]!=-1) then
+
+multipush(R1,R2,R3,R4,R6,R7,R8,R10,R11,R12);
+r1=1;
+call MOD_2;
+multipop(R1,R2,R3,R4,R6,R7,R8,R10,R11,R12);
+[PTBR+ptick*20+cnt]=retn;
+pg=retn;
+multipush(R1,R2,R3,R4,R6,R7,R8,R10,R11,R12);
+r1=2;
+r2=15;
+r3=pg;
+
+r4=[DISK_MAP_TABLE+ptick*10+cnt/2];
+
+
+call MOD_4;
+multipop(R1,R2,R3,R4,R6,R7,R8,R10,R11,R12);
+if((cnt>=4&&cnt<8)||(cnt>=16&&cnt<20)) then
+
+multipush(R1,R2,R3,R4,R6,R7,R8,R10,R11,R12);
+r1=4;
+r2=[DISK_MAP_TABLE+ptick*10+cnt/2];
+r3=15;
+
+call MOD_2;
+multipop(R1,R2,R3,R4,R6,R7,R8,R10,R11,R12);
+[DISK_MAP_TABLE+ptick*10+cnt/2]=-1;
+[PTBR+ptick*20+cnt+1]="0110";
+else
+[PTBR+ptick*20+cnt+1]="0100";
+
+endif;
+
+
+else
+[PTBR+ptick*20+cnt]=-1;
+[PTBR+ptick*20+cnt+1]="0000";
+cnt=cnt+2;
+continue;
+
+endif;
+
+cnt=cnt+2;
+
+
+
+endwhile;
+
+
+[SYSTEM_STATUS_TABLE+4]=[SYSTEM_STATUS_TABLE+4]-1;
+
+[SYSTEM_STATUS_TABLE+5]=0;
+[PROCESS_TABLE+ptick*16+6]=0;
+
+return;
+endif;

@@ -3,7 +3,6 @@ tablebase
 PTLR
 WAIT_MEM
 return
-DISK
 OPEn
 add
 B
@@ -17,14 +16,18 @@ READY
 ROOT
 KERNEL
 root
-breakpoint
 OPEN_FILE_TABLE
 R12
 R13
 R11
 R7
 R14
+105
+b
+DISK
 print
+breakpoint
+break
 
 
 

@@ -3,11 +3,63 @@
 SP=512*([PROCESS_TABLE+([SYSTEM_STATUS_TABLE+1]*16)+11])-1;
 
 backup;
-
+alias cnt R9;
+cnt=0;
+alias funcnum R1;
+alias r2 R2;
+alias addr R10 ;
+addr=PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16;
 alias currentPID R0;
 currentPID = [SYSTEM_STATUS_TABLE+1];
+
+if([SYSTEM_STATUS_TABLE+5]==SWAP_IN||[SYSTEM_STATUS_TABLE+5]==SWAP_OUT) then
+if([SYSTEM_STATUS_TABLE+1]==15) then
+if([SYSTEM_STATUS_TABLE+5]==SWAP_IN) then
+
+multipush(R0,R1,R2,R9,R10);
+funcnum=2;
+r2=15;
+call MOD_6;
+multipop(R0,R1,R2,R9,R10);
+else
+multipush(R0,R1,R2,R9,R10);
+funcnum=1;
+r2=15;           
+call MOD_6;
+multipop(R0,R1,R2,R9,R10);
+endif;
+endif;
+else
+if([SYSTEM_STATUS_TABLE+2]<8) then
+[SYSTEM_STATUS_TABLE+5]=SWAP_OUT;
+
+else
+cnt=0;
+if([SYSTEM_STATUS_TABLE+4]!=0) then
+while(cnt<15) do
+if([PROCESS_TABLE+cnt*16]>MAX_TICK||[SYSTEM_STATUS_TABLE+2]>MEM_HIGH) then
+[SYSTEM_STATUS_TABLE+5]=SWAP_IN;
+break;
+endif;
+cnt=cnt+1;
+endwhile;
+endif;
+endif;
+endif;
+
+
+
+
+
+
+
+
+
+
+
+
 [PROCESS_TABLE+(currentPID)*16+4]="READY";
-alias cnt R12;
+
 cnt=0;
 while(cnt<16) do
 
